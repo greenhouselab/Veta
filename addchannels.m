@@ -1,13 +1,5 @@
-function addchannels1125(s,diode)
-%% Adds EMG channels to record
-%
-% Parameters:
-%   s: session object
-%       data acquisiton session created in EMGrecoed
-%   diode: boolean
-%       1:diode used, 0: no diode used
-%%
-% Each new pair channel line adds a new data acquisition analog input voltage channel 'ai' on device 'Dev1'
+function addchannels(s,diode)
+%% Adds channels for analog recording.
     %pair channel 1
     channel1 = addAnalogInputChannel(s,'Dev1','ai0','Voltage');
     channel1.TerminalConfig = 'SingleEnded';
@@ -32,8 +24,8 @@ function addchannels1125(s,diode)
     %pair channel8
     channel8 = addAnalogInputChannel(s,'Dev1','ai7','Voltage');
     channel8.TerminalConfig = 'SingleEnded';
-    %diode channel
     if diode
     channel9 = addAnalogInputChannel(s,'Dev1','ai8','Voltage');
     channel9.TerminalConfig = 'SingleEnded';
+    end
 end
