@@ -1,4 +1,6 @@
 function EMGfigure(num_channels,EMG_plot_Ylims,MEP_refline,diode,f1,setup,xlims)
+% March 23, 2019 Nick Jackson (njackson@uoregon.edu) & Ian Greenhouse
+% (igreenhouse@uoregon.edu)
 % This function plots data across multiple channels. It is called by the
 % EMGrecord function. For example usage refer to EMGrecord.
 clf
