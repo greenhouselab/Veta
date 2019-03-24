@@ -1,5 +1,5 @@
-function EMGrecord_v1_022019()
-% January 24, 2019 Nick Jackson (njackson@uoregon.edu) & Ian Greenhouse
+function recordEMG()
+% March 23, 2019 Nick Jackson (njackson@uoregon.edu) & Ian Greenhouse
 % (igreenhouse@uoregon.edu)
 % This function plots and records EMG. TMS interface capabilities are also
 % supported enabling triggering of TMS pulses at prespecified times.
