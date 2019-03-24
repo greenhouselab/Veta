@@ -1,4 +1,8 @@
 function varargout = visualizeEMG(varargin)
+% March 23, 2019 Nick Jackson (njackson@uoregon.edu) & Ian Greenhouse
+% (igreenhouse@uoregon.edu)
+%Visualizes EMG data with identified events.
+
 % VISUALIZEEMG MATLAB code for visualizeEMG.fig
 %      VISUALIZEEMG, by itself, creates a new VISUALIZEEMG or raises the existing
 %      singleton*.
