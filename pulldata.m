@@ -1,7 +1,7 @@
 function [trials]=pulldata(diode,i,f1,num_channels,trials)
 % March 23, 2019 Nick Jackson (njackson@uoregon.edu) & Ian Greenhouse
 % (igreenhouse@uoregon.edu)
-%% Extracts data from plotted figure and saves into trials table
+%% Extracts data from plotted figure and saves into trials table. Called from recordEMG function.
 % input:
 %       diode: bool
 %             indicates whether if diode data should be pulled
