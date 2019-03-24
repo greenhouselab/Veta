@@ -1,6 +1,16 @@
 function offset=setOffset(num_channels, diode)
-%SETOFFSET Summary of this function goes here
-%   Detailed explanation goes here
+% March 23, 2019 Nick Jackson (njackson@uoregon.edu) & Ian Greenhouse
+% (igreenhouse@uoregon.edu)
+% Calculates electrode voltage offset for each channel. Aids in data visualization and later analysis.
+% inputs:
+%   num_channels: double
+%        number of channels to calculate offset
+%    diode: boolean
+%        toggles diode visualization
+% outputs:
+%    offset: double
+%        offset on mV to be substracted from trace for further sweep visualizations
+
 %removes previous communication interface objects used in previous scripts 
 delete(instrfindall);
 %% plot parameters
