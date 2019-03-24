@@ -7,5 +7,10 @@ Suite of functions for EMG data visualization and processing
 	# Main Functions
 	
 	recordEMG- vizualizes and collects EMG data
+		calls:
+		setOffset-calculates electrode voltage offset for each channel
+		EMGfigure-creates and refreshes figure for data visualization
+		addchannels-adds user-specified number of EMG channels 
+		pulldata- extracts data every sweep
 	findEMG - identifies MEP and EMG burst events
 	visualizeEMG - GUI that visualizes data with found events
