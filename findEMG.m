@@ -1,4 +1,4 @@
-function findEMG
+function findEMG()
 % March 23, 2019 Nick Jackson (njackson@uoregon.edu) & Ian Greenhouse
 % (igreenhouse@uoregon.edu)
 % This function finds EMG/MEP events. When script is run, user is prompted to
