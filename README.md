@@ -7,6 +7,5 @@ Suite of functions for EMG data visualization and processing
 	# Main Functions
 	
 	recordEMG- vizualizes and collects EMG data
-	<br>findEMG - identifies MEP and EMG burst events
-	<br>visualizeEMG - GUI that visualizes data with found events
-	<br> More to come soon!
+	findEMG - identifies MEP and EMG burst events
+	visualizeEMG - GUI that visualizes data with found events
