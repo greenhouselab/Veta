@@ -1,6 +1,6 @@
 function recordEMG()
 % March 23, 2019 Nick Jackson (njackson@uoregon.edu) & Ian Greenhouse
-% (igreenhouse@uoregon.edu)
+% (img@uoregon.edu)
 % This function plots and records EMG. TMS interface capabilities are also
 % supported enabling triggering of TMS pulses at prespecified times.
 
@@ -22,6 +22,10 @@ parameters.EMG_plot_Ylims_MVC = [-5 5]; % larger Y axis range for MVC
 parameters.MVC_sweep_duration = 4; % in seconds
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% DAQ Vendor
+% DAQ toolbox works with 'ni', 'digilent', 'directsound', 'adi', or 'mcc'.
+DAQ_vendor = 'ni';
 
 %% removes previous communication interface objects used in previous scripts
 delete(instrfindall);
@@ -83,7 +87,7 @@ f1 = figure(1); %creates a figure window
 EMGfigure(num_channels,parameters.EMG_plot_Ylims,parameters.reference_line,diode,f1,1,parameters.xlims)
 
 %% DAQ setup
-s = daq.createSession('ni');
+s = daq.createSession(DAQ_vendor); % DAQ vendor specified above
 s.DurationInSeconds = parameters.sweep_duration;
 s.Rate = parameters.sampling_rate;
 addchannels(s,diode);
