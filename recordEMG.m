@@ -25,6 +25,7 @@ parameters.MVC_sweep_duration = 4; % in seconds
 
 %% DAQ Vendor
 % DAQ toolbox works with 'ni', 'digilent', 'directsound', 'adi', or 'mcc'.
+% See https://www.mathworks.com/help/daq/ref/daq.getvendors.html
 DAQ_vendor = 'ni';
 
 %% removes previous communication interface objects used in previous scripts
