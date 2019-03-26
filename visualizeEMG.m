@@ -55,7 +55,7 @@ function visualizeEMG_OpeningFcn(hObject, eventdata, handles, varargin)
 File= fullfile(PathName, FileName);
 EMGdata=load(File);
 a=1;
-EMGdata.trials.corrected(:,1) = zeros;
+EMGdata.trials.edited(:,1) = zeros;
 ylims=[-1.6 1.6];
 handles.ylims=ylims;
 plot_figure(EMGdata,handles,a)
@@ -247,7 +247,7 @@ EMGdata=handles.EMGdata;
 %manually select onset and offset point for bursts
 x_new=ginput(1);
 EMGdata.trials.MEP_onset_time(a,1)=x_new(1) - EMGdata.trials.artloc(a,1);
-EMGdata.trials.corrected(a,1) = EMGdata.trials.corrected(a,1)+1;
+EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
 handles.EMGdata = EMGdata;
 plot_figure(EMGdata,handles,a)
 guidata(hObject, handles);
@@ -264,7 +264,7 @@ x_new=ginput(2);
 EMGdata.trials.ch1_EMGburst_onset(a,1)=x_new(1,1);
 EMGdata.trials.ch1_EMGburst_offset(a,1)=x_new(2,1);
 EMGdata.trials.ch1_EMG_RT(a,1) = EMGdata.trials.ch1_EMGburst_onset(a,1) - EMGdata.trials.stim_onset(a,1);
-EMGdata.trials.corrected(a,1) = EMGdata.trials.corrected(a,1)+1;
+EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
 handles.EMGdata = EMGdata;
 plot_figure(EMGdata,handles,a)
 guidata(hObject, handles);
@@ -282,7 +282,7 @@ x_new=ginput(2);
 EMGdata.trials.ch2_EMGburst_onset(a,1)=x_new(1,1);
 EMGdata.trials.ch2_EMGburst_offset(a,1)=x_new(2,1);
 EMGdata.trials.ch2_EMG_RT(a,1) = EMGdata.trials.ch2_EMGburst_onset(a,1) - EMGdata.trials.stim_onset(a,1);
-EMGdata.trials.corrected(a,1) = EMGdata.trials.corrected(a,1)+1;
+EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
 handles.EMGdata = EMGdata;
 plot_figure(EMGdata,handles,a)
 guidata(hObject, handles);
@@ -300,7 +300,7 @@ x_new=ginput(2);
 EMGdata.trials.ch3_EMGburst_onset(a,1)=x_new(1,1);
 EMGdata.trials.ch3_EMGburst_offset(a,1)=x_new(2,1);
 EMGdata.trials.ch3_EMG_RT(a,1) = EMGdata.trials.ch3_EMGburst_onset(a,1) - EMGdata.trials.stim_onset(a,1);
-EMGdata.trials.corrected(a,1) = EMGdata.trials.corrected(a,1)+1;
+EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
 handles.EMGdata = EMGdata;
 plot_figure(EMGdata,handles,a)
 guidata(hObject, handles);
@@ -318,7 +318,7 @@ x_new=ginput(2);
 EMGdata.trials.ch4_EMGburst_onset(a,1)=x_new(1,1);
 EMGdata.trials.ch4_EMGburst_offset(a,1)=x_new(2,1);
 EMGdata.trials.ch4_EMG_RT(a,1) = EMGdata.trials.ch4_EMGburst_onset(a,1) - EMGdata.trials.stim_onset(a,1);
-EMGdata.trials.corrected(a,1) = EMGdata.trials.corrected(a,1)+1;
+EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
 handles.EMGdata = EMGdata;
 plot_figure(EMGdata,handles,a)
 guidata(hObject, handles);
