@@ -1,8 +1,4 @@
 function varargout = visualizeEMG(varargin)
-% March 23, 2019 Nick Jackson (njackson@uoregon.edu) & Ian Greenhouse
-% (igreenhouse@uoregon.edu)
-%Visualizes EMG data with identified events.
-
 % VISUALIZEEMG MATLAB code for visualizeEMG.fig
 %      VISUALIZEEMG, by itself, creates a new VISUALIZEEMG or raises the existing
 %      singleton*.
@@ -60,7 +56,8 @@ File= fullfile(PathName, FileName);
 EMGdata=load(File);
 a=1;
 EMGdata.trials.corrected(:,1) = zeros;
-
+ylims=[-1.6 1.6];
+handles.ylims=ylims;
 plot_figure(EMGdata,handles,a)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -328,8 +325,8 @@ guidata(hObject, handles);
 
 %%
 function plot_figure(EMGdata,handles,a)
-
-ylims = [-.3 .3]; % these should be imported or no?
+ylims=handles.ylims;
+%ylims = [-.3 .3]; % these should be imported or no?
 
 %this could be improved probably
 if ~EMGdata.parameters.EMG %no EMG, hide all brush buttons
@@ -372,7 +369,6 @@ for n=1:subplot_number
     else
         y=EMGdata.trials.photodiode{a,1};
     end
-    % [IAN: DO THE PHOTODIODE AND EMG CHANNELS DIFFER IN LENGTH?]
     x = linspace(0,(length(y)/EMGdata.parameters.sampling_rate),length(y));%y can eventually be samplingrate*sweepduration
     p = plot(x,y,'k');   
     
@@ -402,7 +398,7 @@ for n=1:subplot_number
         xlabel('Time (s)', 'FontSize',14, 'FontName', 'Arial', 'FontWeight', 'bold');
     end
 
-    ylim(ylims);
+    ylim(handles.ylims);
 
     if EMGdata.parameters.TMS % if TMS was used
         %add MEP line
