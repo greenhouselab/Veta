@@ -1,6 +1,6 @@
 function findEMG()
 % March 23, 2019 Nick Jackson (njackson@uoregon.edu) & Ian Greenhouse
-% (igreenhouse@uoregon.edu)
+% (img@uoregon.edu)
 % This function finds EMG/MEP events. When script is run, user is prompted to
 % open file that was output by EMGrecord.
 % output:
@@ -68,6 +68,7 @@ if parameters.TMS
     trials.MEP_onset_time(:,1) = 0;
     trials.MEPamplitude(:,1) = 0;
     trials.RMS_preMEP(:,1) = 0;
+    trials.preTMS_period_start(:,1) = 0;
     parameters.artchan_index = input('Enter TMS artefact channel #:');
     parameters.MEPchan_index = input('Enter MEP channel #:');
 end
@@ -126,8 +127,7 @@ end
 
 %% sweep loop
     for i = 1:height(trials)
-        %create temporary table
-    %     temptrials=trials;% for some reason when defined before the loop this doesn't work
+
         %artefact channel
         if parameters.TMS
             
@@ -146,6 +146,12 @@ end
                 % for determining threshold for MEP.
                 preTMS_reference_window_lower_limit = TMS_artefact_sample_index - (parameters.pre_TMS_reference_window * parameters.sampling_rate);
 
+                %redefine range if preTMS reference range extends beyond lower x limit
+                if preTMS_reference_window_lower_limit < 1
+                    preTMS_reference_window_lower_limit = 1;                    
+                end
+                trials.preTMS_period_start(i,1) = preTMS_reference_window_lower_limit/parameters.sampling_rate;
+                                
                 %redefine range if it extends beyond upper x limit
                 if upper_limit_MEP_window > length(trials.ch1{1,1})
                     upper_limit_MEP_window=length(trials.ch1{1,1})-1;
@@ -156,8 +162,6 @@ end
                 MEPsearchrange = MEPchannel(lower_limit_MEP_window:upper_limit_MEP_window);
                 [max_MEP_value,MEP_max_sample_point] = max(MEPsearchrange);
                 [min_MEP_value,MEP_min_sample_point] = min(MEPsearchrange);
-%                 MEP_max_peak_sample_index = MEP_max_sample_point + lower_limit_MEP_window;
-%                 MEP_min_peak_sample_index = MEP_min_sample_point + lower_limit_MEP_window;
 
                 % identify MEP onset
                 MEP_onset_index = find(abs(MEPsearchrange) > parameters.MEP_onset_std_threshold * std(abs(preTMS_MEP_reference_data)),1); % first value that exceeds std threshold within rectified MEP search range
