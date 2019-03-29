@@ -1,4 +1,5 @@
 function varargout = visualizeEMG(varargin)
+%Last edit made 3/28/19 by NJ
 % VISUALIZEEMG MATLAB code for visualizeEMG.fig
 %      VISUALIZEEMG, by itself, creates a new VISUALIZEEMG or raises the existing
 %      singleton*.
@@ -22,7 +23,7 @@ function varargout = visualizeEMG(varargin)
 
 % Edit the above text to modify the response to help visualizeEMG
 
-% Last Modified by GUIDE v2.5 14-Mar-2019 11:39:27
+% Last Modified by GUIDE v2.5 28-Mar-2019 11:56:05
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -55,8 +56,12 @@ function visualizeEMG_OpeningFcn(hObject, eventdata, handles, varargin)
 File= fullfile(PathName, FileName);
 EMGdata=load(File);
 a=1;
-EMGdata.trials.edited(:,1) = zeros;
-ylims=[-1.6 1.6];
+EMGdata.trials.corrected(:,1) = zeros;
+ylims=[-2.2 2.2];
+
+handles.display_chan=input('Enter channel of metadata to display:');
+
+
 handles.ylims=ylims;
 plot_figure(EMGdata,handles,a)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -237,24 +242,94 @@ trials=EMGdata.trials;
 uisave({'trials','subject','parameters'},outfile);
 display('saved');
 
-%% --- Executes on button press in mep_brush.
-function mep_brush_Callback(hObject, eventdata, handles)
-% hObject    handle to mep_brush (see GCBO)
+%% --- Executes on button press in ch1_MEP.
+function ch1_MEP_Callback(hObject, eventdata, handles)
+% hObject    handle to ch1_MEP (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+a=handles.a;
+EMGdata=handles.EMGdata;
+%manually select onset and offset point for bursts
+x_new=ginput(1)
+EMGdata.trials.ch1_MEP_onset_time(a,1)=x_new(1) - EMGdata.trials.artloc(a,1);
+
+MEPchannel=EMGdata.trials.ch1{a,1};
+MEPsearchrange = MEPchannel(x_new(1)* EMGdata.parameters.sampling_rate:(x_new(1)+EMGdata.parameters.pre_TMS_reference_window) * EMGdata.parameters.sampling_rate);
+[max_MEP_value,MEP_max_sample_point] = max(MEPsearchrange);
+[min_MEP_value,MEP_min_sample_point] = min(MEPsearchrange);
+EMGdata.trials.ch1_MEPamplitude(a,1)=max_MEP_value-min_MEP_value;
+
+EMGdata.trials.corrected(a,1) = EMGdata.trials.corrected(a,1)+1;
+handles.EMGdata = EMGdata;
+plot_figure(EMGdata,handles,a)
+guidata(hObject, handles);
+
+
+% --- Executes on button press in ch2_MEP.
+function ch2_MEP_Callback(hObject, eventdata, handles)
+% hObject    handle to ch2_MEP (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 a=handles.a;
 EMGdata=handles.EMGdata;
 %manually select onset and offset point for bursts
 x_new=ginput(1);
-EMGdata.trials.MEP_onset_time(a,1)=x_new(1) - EMGdata.trials.artloc(a,1);
-EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
+EMGdata.trials.ch2_MEP_onset_time(a,1)=x_new(1) - EMGdata.trials.artloc(a,1);
+MEPchannel=EMGdata.trials.ch2{a,1};
+MEPsearchrange = MEPchannel(x_new(1)* EMGdata.parameters.sampling_rate:(x_new(1)+EMGdata.parameters.pre_TMS_reference_window) * EMGdata.parameters.sampling_rate);
+[max_MEP_value,MEP_max_sample_point] = max(MEPsearchrange);
+[min_MEP_value,MEP_min_sample_point] = min(MEPsearchrange);
+EMGdata.trials.ch2_MEPamplitude(a,1)=max_MEP_value-min_MEP_value;
+EMGdata.trials.corrected(a,1) = EMGdata.trials.corrected(a,1)+1;
 handles.EMGdata = EMGdata;
 plot_figure(EMGdata,handles,a)
 guidata(hObject, handles);
 
-%% --- Executes on button press in brush1.
-function brush1_Callback(hObject, eventdata, handles)
-% hObject    handle to brush1 (see GCBO)
+
+% --- Executes on button press in ch3_MEP.
+function ch3_MEP_Callback(hObject, eventdata, handles)
+% hObject    handle to ch3_MEP (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+a=handles.a;
+EMGdata=handles.EMGdata;
+%manually select onset and offset point for bursts
+x_new=ginput(1);
+EMGdata.trials.ch3_MEP_onset_time(a,1)=x_new(1) - EMGdata.trials.artloc(a,1);
+MEPchannel=EMGdata.trials.ch3{a,1};
+MEPsearchrange = MEPchannel(x_new(1)* EMGdata.parameters.sampling_rate:(x_new(1)+EMGdata.parameters.pre_TMS_reference_window) * EMGdata.parameters.sampling_rate);
+[max_MEP_value,MEP_max_sample_point] = max(MEPsearchrange);
+[min_MEP_value,MEP_min_sample_point] = min(MEPsearchrange);
+EMGdata.trials.ch3_MEPamplitude(a,1)=max_MEP_value-min_MEP_value;
+EMGdata.trials.corrected(a,1) = EMGdata.trials.corrected(a,1)+1;
+handles.EMGdata = EMGdata;
+plot_figure(EMGdata,handles,a)
+guidata(hObject, handles);
+
+
+% --- Executes on button press in ch4_MEP.
+function ch4_MEP_Callback(hObject, eventdata, handles)
+% hObject    handle to ch4_MEP (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+a=handles.a;
+EMGdata=handles.EMGdata;
+%manually select onset and offset point for bursts
+x_new=ginput(1);
+EMGdata.trials.ch4_MEP_onset_time(a,1)=x_new(1) - EMGdata.trials.artloc(a,1);
+MEPchannel=EMGdata.trials.ch4{a,1};
+MEPsearchrange = MEPchannel(x_new(1)* EMGdata.parameters.sampling_rate:(x_new(1)+EMGdata.parameters.pre_TMS_reference_window) * EMGdata.parameters.sampling_rate);
+[max_MEP_value,MEP_max_sample_point] = max(MEPsearchrange);
+[min_MEP_value,MEP_min_sample_point] = min(MEPsearchrange);
+EMGdata.trials.ch4_MEPamplitude(a,1)=max_MEP_value-min_MEP_value;
+EMGdata.trials.corrected(a,1) = EMGdata.trials.corrected(a,1)+1;
+handles.EMGdata = EMGdata;
+plot_figure(EMGdata,handles,a)
+guidata(hObject, handles);
+
+%% --- Executes on button press in ch1_burst.
+function ch1_burst_Callback(hObject, eventdata, handles)
+% hObject    handle to ch1_burst (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 a=handles.a;
@@ -264,15 +339,15 @@ x_new=ginput(2);
 EMGdata.trials.ch1_EMGburst_onset(a,1)=x_new(1,1);
 EMGdata.trials.ch1_EMGburst_offset(a,1)=x_new(2,1);
 EMGdata.trials.ch1_EMG_RT(a,1) = EMGdata.trials.ch1_EMGburst_onset(a,1) - EMGdata.trials.stim_onset(a,1);
-EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
+EMGdata.trials.corrected(a,1) = EMGdata.trials.corrected(a,1)+1;
 handles.EMGdata = EMGdata;
 plot_figure(EMGdata,handles,a)
 guidata(hObject, handles);
 
 
-%% --- Executes on button press in brush2.
-function brush2_Callback(hObject, eventdata, handles)
-% hObject    handle to brush2 (see GCBO)
+%% --- Executes on button press in ch2_burst.
+function ch2_burst_Callback(hObject, eventdata, handles)
+% hObject    handle to ch2_burst (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 a=handles.a;
@@ -282,15 +357,15 @@ x_new=ginput(2);
 EMGdata.trials.ch2_EMGburst_onset(a,1)=x_new(1,1);
 EMGdata.trials.ch2_EMGburst_offset(a,1)=x_new(2,1);
 EMGdata.trials.ch2_EMG_RT(a,1) = EMGdata.trials.ch2_EMGburst_onset(a,1) - EMGdata.trials.stim_onset(a,1);
-EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
+EMGdata.trials.corrected(a,1) = EMGdata.trials.corrected(a,1)+1;
 handles.EMGdata = EMGdata;
 plot_figure(EMGdata,handles,a)
 guidata(hObject, handles);
 
 
-%% --- Executes on button press in brush3.
-function brush3_Callback(hObject, eventdata, handles)
-% hObject    handle to brush3 (see GCBO)
+%% --- Executes on button press in ch3_burst.
+function ch3_burst_Callback(hObject, eventdata, handles)
+% hObject    handle to ch3_burst (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 a=handles.a;
@@ -300,15 +375,15 @@ x_new=ginput(2);
 EMGdata.trials.ch3_EMGburst_onset(a,1)=x_new(1,1);
 EMGdata.trials.ch3_EMGburst_offset(a,1)=x_new(2,1);
 EMGdata.trials.ch3_EMG_RT(a,1) = EMGdata.trials.ch3_EMGburst_onset(a,1) - EMGdata.trials.stim_onset(a,1);
-EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
+EMGdata.trials.corrected(a,1) = EMGdata.trials.corrected(a,1)+1;
 handles.EMGdata = EMGdata;
 plot_figure(EMGdata,handles,a)
 guidata(hObject, handles);
 
 
-%% --- Executes on button press in brush4.
-function brush4_Callback(hObject, eventdata, handles)
-% hObject    handle to brush4 (see GCBO)
+%% --- Executes on button press in ch4_burst.
+function ch4_burst_Callback(hObject, eventdata, handles)
+% hObject    handle to ch4_burst (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 a=handles.a;
@@ -318,7 +393,7 @@ x_new=ginput(2);
 EMGdata.trials.ch4_EMGburst_onset(a,1)=x_new(1,1);
 EMGdata.trials.ch4_EMGburst_offset(a,1)=x_new(2,1);
 EMGdata.trials.ch4_EMG_RT(a,1) = EMGdata.trials.ch4_EMGburst_onset(a,1) - EMGdata.trials.stim_onset(a,1);
-EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
+EMGdata.trials.corrected(a,1) = EMGdata.trials.corrected(a,1)+1;
 handles.EMGdata = EMGdata;
 plot_figure(EMGdata,handles,a)
 guidata(hObject, handles);
@@ -326,25 +401,32 @@ guidata(hObject, handles);
 %%
 function plot_figure(EMGdata,handles,a)
 ylims=handles.ylims;
-%ylims = [-.3 .3]; % these should be imported or no?
 
 %this could be improved probably
-if ~EMGdata.parameters.EMG %no EMG, hide all brush buttons
+if ~EMGdata.parameters.EMG %no EMG, hide all burst brush buttons
     for n = 1:4 % 4 is number of plots
-        set(handles.(['brush', num2str(n)]),'visible','off');
+            set(handles.(['ch', num2str(n),'_burst']),'visible','off');
     end
 else %if EMG, hide non burst channels [IAN: WHY NOT JUST THIS?]
     for n = 1:4
         if ~ismember(n,EMGdata.parameters.EMG_burst_channels)
-            set(handles.(['brush', num2str(n)]),'visible','off');
+            set(handles.(['ch', num2str(n),'_burst']),'visible','off');
         end
     end
 end
 
-if ~EMGdata.parameters.TMS % no TMS, hide MEP brush button
-    set(handles.(['mep_brush']),'visible','off');
+if ~EMGdata.parameters.TMS %no TMS, hide all MEP brush buttons
+    for n = 1:4 % 4 is number of plots
+            set(handles.(['ch', num2str(n),'_MEP']),'visible','off');
+    end
+else %if TMS, hide non burst channels [IAN: WHY NOT JUST THIS?]
+    for n = 1:4
+        if ~ismember(n,EMGdata.parameters.MEPchan_index)
+            set(handles.(['ch', num2str(n),'_MEP']),'visible','off');
+        end
+    end
 end
-    
+
 for n = 1:4
     if sum(ismember(EMGdata.trials.Properties.VariableNames,['ch' num2str(n) '_EMG_RT'])) && EMGdata.trials.(['ch' num2str(n) '_EMG_RT'])(a,1)
        EMG_RT = EMGdata.trials.(['ch' num2str(n) '_EMG_RT'])(a,1);
@@ -377,12 +459,12 @@ for n=1:subplot_number
             title_text = sprintf('Sweep #: %d\n EMG RT (s): %0.3f', ...
                 a, ... 
                 EMG_RT);
-        else
+        else            
             title_text = sprintf('Sweep #: %d\n RMS: %0.3f\n MEP onset (s): %0.3f\n MEP amplitude (mV): %0.3f\n EMG RT (s): %0.3f', ...
                 a, ... 
-                EMGdata.trials.RMS_preMEP(a,1), ...
-                EMGdata.trials.MEP_onset_time(a,1), ...
-                EMGdata.trials.MEPamplitude(a,1), ...
+                EMGdata.trials.(['ch',num2str(handles.display_chan),'_RMS_preMEP'])(a,1), ...
+                EMGdata.trials.(['ch',num2str(handles.display_chan),'_MEP_onset_time'])(a,1), ...
+                EMGdata.trials.(['ch',num2str(handles.display_chan),'_MEPamplitude'])(a,1), ...
                 EMG_RT);
         end
         title(title_text,'FontSize',14, 'FontName', 'Arial', 'FontWeight', 'normal');%make font bigger
@@ -401,9 +483,10 @@ for n=1:subplot_number
     ylim(handles.ylims);
 
     if EMGdata.parameters.TMS % if TMS was used
-        %add MEP line
-        if EMGdata.trials.artloc(a,1) && EMGdata.parameters.MEPchan_index==n
-            line([EMGdata.trials.MEP_onset_time(a,1)+EMGdata.trials.artloc(a,1) EMGdata.trials.MEP_onset_time(a,1)+EMGdata.trials.artloc(a,1)], ylims ,'Color',[.2 .4 1],'Marker','o')
+        %add MEP line %%%insert blah here parameters.MEPchan_index
+        %EMGdata.trials.(['ch', num2str(n),'_MEP_onset_time'])(a,1)
+        if EMGdata.trials.artloc(a,1) && ismember(n,EMGdata.parameters.MEPchan_index)
+            line([EMGdata.trials.(['ch', num2str(n),'_MEP_onset_time'])(a,1)+EMGdata.trials.artloc(a,1) EMGdata.trials.(['ch', num2str(n),'_MEP_onset_time'])(a,1)+EMGdata.trials.artloc(a,1)], ylims ,'Color',[.2 .4 1],'Marker','o')
         end
         %add TMS artefact
         if EMGdata.trials.artloc(a,1) && EMGdata.parameters.artchan_index==n
@@ -423,3 +506,5 @@ for n=1:subplot_number
         line([EMGdata.trials.stim_onset(a,1) EMGdata.trials.stim_onset(a,1)], ylims ,'Color','magenta','Marker','o')
     end  
 end
+
+
