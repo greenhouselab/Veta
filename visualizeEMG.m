@@ -1,5 +1,5 @@
 function varargout = visualizeEMG(varargin)
-%Last edit made 3/28/19 by NJ
+%Last edit made 3/29/19 by NJ
 % VISUALIZEEMG MATLAB code for visualizeEMG.fig
 %      VISUALIZEEMG, by itself, creates a new VISUALIZEEMG or raises the existing
 %      singleton*.
@@ -23,7 +23,7 @@ function varargout = visualizeEMG(varargin)
 
 % Edit the above text to modify the response to help visualizeEMG
 
-% Last Modified by GUIDE v2.5 28-Mar-2019 11:56:05
+% Last Modified by GUIDE v2.5 28-Mar-2019 23:20:46
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -57,10 +57,7 @@ File= fullfile(PathName, FileName);
 EMGdata=load(File);
 a=1;
 EMGdata.trials.corrected(:,1) = zeros;
-ylims=[-2.2 2.2];
-
-handles.display_chan=input('Enter channel of metadata to display:');
-
+ylims=[-1 1];
 
 handles.ylims=ylims;
 plot_figure(EMGdata,handles,a)
@@ -166,9 +163,9 @@ handles.a = a;
 handles.output = hObject;
 %set checkbox
 if EMGdata.trials.trial_accept(a,1)==1
-set(handles.accept_checkbox,'Value',1)
+    set(handles.accept_checkbox,'Value',1)
 else
-set(handles.accept_checkbox,'Value',0)
+    set(handles.accept_checkbox,'Value',0)
 end
 
 guidata(hObject, handles);
@@ -195,9 +192,9 @@ handles.a = a;
 handles.output = hObject;
 %set checkbox
 if EMGdata.trials.trial_accept(a,1)==1
-set(handles.accept_checkbox,'Value',1)
+    set(handles.accept_checkbox,'Value',1)
 else
-set(handles.accept_checkbox,'Value',0)
+    set(handles.accept_checkbox,'Value',0)
 end
 
 guidata(hObject, handles);
@@ -405,7 +402,7 @@ ylims=handles.ylims;
 %this could be improved probably
 if ~EMGdata.parameters.EMG %no EMG, hide all burst brush buttons
     for n = 1:4 % 4 is number of plots
-            set(handles.(['ch', num2str(n),'_burst']),'visible','off');
+        set(handles.(['ch', num2str(n),'_burst']),'visible','off');
     end
 else %if EMG, hide non burst channels [IAN: WHY NOT JUST THIS?]
     for n = 1:4
@@ -417,24 +414,17 @@ end
 
 if ~EMGdata.parameters.TMS %no TMS, hide all MEP brush buttons
     for n = 1:4 % 4 is number of plots
-            set(handles.(['ch', num2str(n),'_MEP']),'visible','off');
+        set(handles.(['ch', num2str(n),'_MEP']),'visible','off');
     end
-else %if TMS, hide non burst channels [IAN: WHY NOT JUST THIS?]
+else %if TMS, hide non burst channels
     for n = 1:4
-        if ~ismember(n,EMGdata.parameters.MEPchan_index)
+        if ~ismember(n,EMGdata.parameters.MEP_channels)
             set(handles.(['ch', num2str(n),'_MEP']),'visible','off');
         end
     end
 end
 
-for n = 1:4
-    if sum(ismember(EMGdata.trials.Properties.VariableNames,['ch' num2str(n) '_EMG_RT'])) && EMGdata.trials.(['ch' num2str(n) '_EMG_RT'])(a,1)
-       EMG_RT = EMGdata.trials.(['ch' num2str(n) '_EMG_RT'])(a,1);
-    end
-    if ~exist('EMG_RT')
-        EMG_RT = 0;
-    end
-end
+
 
 if any(strcmp('photodiode', EMGdata.trials.Properties.VariableNames))
     photodiode=1;
@@ -452,40 +442,32 @@ for n=1:subplot_number
         y=EMGdata.trials.photodiode{a,1};
     end
     x = linspace(0,(length(y)/EMGdata.parameters.sampling_rate),length(y));%y can eventually be samplingrate*sweepduration
-    p = plot(x,y,'k');   
+    p = plot(x,y,'k');
     
     if n==1
-        if EMGdata.parameters.EMG && ~EMGdata.parameters.TMS
-            title_text = sprintf('Sweep #: %d\n EMG RT (s): %0.3f', ...
-                a, ... 
-                EMG_RT);
-        else            
-            title_text = sprintf('Sweep #: %d\n RMS: %0.3f\n MEP onset (s): %0.3f\n MEP amplitude (mV): %0.3f\n EMG RT (s): %0.3f', ...
-                a, ... 
-                EMGdata.trials.(['ch',num2str(handles.display_chan),'_RMS_preMEP'])(a,1), ...
-                EMGdata.trials.(['ch',num2str(handles.display_chan),'_MEP_onset_time'])(a,1), ...
-                EMGdata.trials.(['ch',num2str(handles.display_chan),'_MEPamplitude'])(a,1), ...
-                EMG_RT);
-        end
+        title_text = sprintf('Sweep #: %d', a);
         title(title_text,'FontSize',14, 'FontName', 'Arial', 'FontWeight', 'normal');%make font bigger
     end
-    %add y label
+    
+    
+    
+    % add y label
     if ~photodiode || n<subplot_number
         ylabel({['ch ',num2str(n)],'mV'},'FontSize',14, 'FontName', 'Arial', 'FontWeight', 'bold');%add channel label
     elseif photodiode && n==subplot_number
-                ylabel('photodiode','FontSize',14, 'FontName', 'Arial', 'FontWeight', 'bold');
+        ylabel('photodiode','FontSize',14, 'FontName', 'Arial', 'FontWeight', 'bold');
     end
     %add x label
     if n==subplot_number
         xlabel('Time (s)', 'FontSize',14, 'FontName', 'Arial', 'FontWeight', 'bold');
     end
-
+    
     ylim(handles.ylims);
-
+    
     if EMGdata.parameters.TMS % if TMS was used
-        %add MEP line %%%insert blah here parameters.MEPchan_index
+        %add MEP line %%%insert blah here parameters.MEP_channels
         %EMGdata.trials.(['ch', num2str(n),'_MEP_onset_time'])(a,1)
-        if EMGdata.trials.artloc(a,1) && ismember(n,EMGdata.parameters.MEPchan_index)
+        if EMGdata.trials.artloc(a,1) && ismember(n,EMGdata.parameters.MEP_channels)
             line([EMGdata.trials.(['ch', num2str(n),'_MEP_onset_time'])(a,1)+EMGdata.trials.artloc(a,1) EMGdata.trials.(['ch', num2str(n),'_MEP_onset_time'])(a,1)+EMGdata.trials.artloc(a,1)], ylims ,'Color',[.2 .4 1],'Marker','o')
         end
         %add TMS artefact
@@ -504,7 +486,42 @@ for n=1:subplot_number
     %add diode
     if photodiode && n==subplot_number && EMGdata.trials.stim_onset(a,1)
         line([EMGdata.trials.stim_onset(a,1) EMGdata.trials.stim_onset(a,1)], ylims ,'Color','magenta','Marker','o')
-    end  
+    end
+    
+    
+    
+    
+    % add text to plots
+    if sum(ismember(EMGdata.trials.Properties.VariableNames,['ch' num2str(n) '_EMG_RT'])) && ~sum(ismember(EMGdata.trials.Properties.VariableNames,['ch' num2str(n) '_RMS_preMEP']))
+        subplot_text = sprintf(' EMG RT (s): %0.3f', ...
+            EMGdata.trials.(['ch' num2str(n) '_EMG_RT'])(a,1));
+        
+        %         text_position(1) = x(end);%x((length(y)/EMGdata.parameters.sampling_rate));
+        %         text_position(2) = mean([handles.ylims(2) handles.ylims(1)]);
+        %         text(text_position(1), text_position(2), subplot_text);
+        
+    elseif sum(ismember(EMGdata.trials.Properties.VariableNames,['ch' num2str(n) '_EMG_RT'])) && sum(ismember(EMGdata.trials.Properties.VariableNames,['ch' num2str(n) '_RMS_preMEP']))
+        subplot_text = sprintf(' EMG RT (s): %0.3f\n RMS: %0.3f\n MEP onset (s): %0.3f\n MEP amplitude (mV): %0.3f', ...
+            EMGdata.trials.(['ch' num2str(n) '_EMG_RT'])(a,1), ...
+            EMGdata.trials.(['ch',num2str(n),'_RMS_preMEP'])(a,1), ...
+            EMGdata.trials.(['ch',num2str(n),'_MEP_onset_time'])(a,1), ...
+            EMGdata.trials.(['ch',num2str(n),'_MEPamplitude'])(a,1));
+        
+        
+    end
+    
+    %if sum(ismember(EMGdata.trials.Properties.VariableNames,['ch' num2str(n) '_RMS_preMEP'])) &&
+    
+    
+    
+    %         text_position(1) = x(end);%x((length(y)/EMGdata.parameters.sampling_rate));
+    %         text_position(2) = handles.ylims(2) - (handles.ylims(2))/3;
+    %text(text_position(1), text_position(2), subplot_text);
+    %annotation('textbox', [.2 .5 .3 .3], 'string', subplot_text)
+    
+    
+    legend([p],subplot_text,'Location','eastoutside')
+    %set(hLegendEntry,'IconDisplayStyle','off')
+    legend('boxoff')
+    
 end
-
-
