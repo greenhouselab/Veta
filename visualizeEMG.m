@@ -434,8 +434,11 @@ else
     photodiode=0;
 end
 
+% clear annotations
+delete(findall(gcf,'type','annotation'))
+
 for n=1:subplot_number
-    subplot(subplot_number,1,n)
+    subplot_handle = subplot(subplot_number,1,n);    
     if photodiode && n < subplot_number || ~photodiode
         y=EMGdata.trials.(['ch',num2str(n)]){a,1};
     else
@@ -448,9 +451,7 @@ for n=1:subplot_number
         title_text = sprintf('Sweep #: %d', a);
         title(title_text,'FontSize',14, 'FontName', 'Arial', 'FontWeight', 'normal');%make font bigger
     end
-    
-    
-    
+   
     % add y label
     if ~photodiode || n<subplot_number
         ylabel({['ch ',num2str(n)],'mV'},'FontSize',14, 'FontName', 'Arial', 'FontWeight', 'bold');%add channel label
@@ -486,42 +487,40 @@ for n=1:subplot_number
     %add diode
     if photodiode && n==subplot_number && EMGdata.trials.stim_onset(a,1)
         line([EMGdata.trials.stim_onset(a,1) EMGdata.trials.stim_onset(a,1)], ylims ,'Color','magenta','Marker','o')
-    end
+    end            
     
-    
-    
+    % subplot position
+    subplot_position = subplot_handle.Position;
+    subplot_right_edge = subplot_position(1)+subplot_position(3);
+    subplot_top = subplot_position(2)+subplot_position(4);
     
     % add text to plots
     if sum(ismember(EMGdata.trials.Properties.VariableNames,['ch' num2str(n) '_EMG_RT'])) && ~sum(ismember(EMGdata.trials.Properties.VariableNames,['ch' num2str(n) '_RMS_preMEP']))
         subplot_text = sprintf(' EMG RT (s): %0.3f', ...
             EMGdata.trials.(['ch' num2str(n) '_EMG_RT'])(a,1));
         
-        %         text_position(1) = x(end);%x((length(y)/EMGdata.parameters.sampling_rate));
-        %         text_position(2) = mean([handles.ylims(2) handles.ylims(1)]);
-        %         text(text_position(1), text_position(2), subplot_text);
+        th = annotation('textbox', [subplot_right_edge subplot_top-.02 .09 .02], 'String', subplot_text);
+        th.LineStyle = 'none';
         
     elseif sum(ismember(EMGdata.trials.Properties.VariableNames,['ch' num2str(n) '_EMG_RT'])) && sum(ismember(EMGdata.trials.Properties.VariableNames,['ch' num2str(n) '_RMS_preMEP']))
-        subplot_text = sprintf(' EMG RT (s): %0.3f\n RMS: %0.3f\n MEP onset (s): %0.3f\n MEP amplitude (mV): %0.3f', ...
+        subplot_text = sprintf(' EMG RT (s): %0.3f\n RMS: %0.3f\n MEP onset (s): %0.3f\n MEP amp. (mV): %0.3f', ...
             EMGdata.trials.(['ch' num2str(n) '_EMG_RT'])(a,1), ...
             EMGdata.trials.(['ch',num2str(n),'_RMS_preMEP'])(a,1), ...
             EMGdata.trials.(['ch',num2str(n),'_MEP_onset_time'])(a,1), ...
             EMGdata.trials.(['ch',num2str(n),'_MEPamplitude'])(a,1));
+                 
+        th = annotation('textbox', [subplot_right_edge subplot_top-.1 .09 .1], 'String', subplot_text);
+        th.LineStyle = 'none';
         
+    elseif sum(ismember(EMGdata.trials.Properties.VariableNames,['ch' num2str(n) '_RMS_preMEP']))
+        subplot_text = sprintf(' RMS: %0.3f\n MEP onset (s): %0.3f\n MEP amp. (mV): %0.3f', ...
+            EMGdata.trials.(['ch',num2str(n),'_RMS_preMEP'])(a,1), ...
+            EMGdata.trials.(['ch',num2str(n),'_MEP_onset_time'])(a,1), ...
+            EMGdata.trials.(['ch',num2str(n),'_MEPamplitude'])(a,1));
+           
+        th = annotation('textbox', [subplot_right_edge subplot_top-.1 .09 .1], 'String', subplot_text);        
+        th.LineStyle = 'none';
         
     end
-    
-    %if sum(ismember(EMGdata.trials.Properties.VariableNames,['ch' num2str(n) '_RMS_preMEP'])) &&
-    
-    
-    
-    %         text_position(1) = x(end);%x((length(y)/EMGdata.parameters.sampling_rate));
-    %         text_position(2) = handles.ylims(2) - (handles.ylims(2))/3;
-    %text(text_position(1), text_position(2), subplot_text);
-    %annotation('textbox', [.2 .5 .3 .3], 'string', subplot_text)
-    
-    
-    legend([p],subplot_text,'Location','eastoutside')
-    %set(hLegendEntry,'IconDisplayStyle','off')
-    legend('boxoff')
     
 end
