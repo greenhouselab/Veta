@@ -252,8 +252,8 @@ if EMGdata.trials.artloc(a,1)
     EMGdata.trials.ch1_MEP_onset_time(a,1) = x_new(1) - EMGdata.trials.artloc(a,1);
 elseif ~EMGdata.trials.artloc(a,1)
     x_new = ginput(2); % first select TMS artefact location, then select MEP onset
-    EMGdata.trials.artloc(a,1) = x_new(1,1);
-    EMGdata.trials.ch1_MEP_onset_time(a,1) = x_new(2,1) - EMGdata.trials.artloc(a,1);
+    EMGdata.trials.artloc(a,1) = x_new(1);
+    EMGdata.trials.ch1_MEP_onset_time(a,1) = x_new(2) - EMGdata.trials.artloc(a,1);
 end
 
 MEPchannel=EMGdata.trials.ch1{a,1};
@@ -283,7 +283,7 @@ if EMGdata.trials.artloc(a,1)
 elseif ~EMGdata.trials.artloc(a,1)
     x_new = ginput(2); % first select TMS artefact location, then select MEP onset
     EMGdata.trials.artloc(a,1) = x_new(1,1);
-    EMGdata.trials.ch2_MEP_onset_time(a,1) = x_new(2,1) - EMGdata.trials.artloc(a,1);
+    EMGdata.trials.ch2_MEP_onset_time(a,1) = x_new(2) - EMGdata.trials.artloc(a,1);
 end
 
 MEPchannel = EMGdata.trials.ch2{a,1};
@@ -304,17 +304,9 @@ function ch3_MEP_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 a=handles.a;
 EMGdata=handles.EMGdata;
-
-% manually select onset point for MEP
-if EMGdata.trials.artloc(a,1)
-    x_new = ginput(1);
-    EMGdata.trials.ch3_MEP_onset_time(a,1) = x_new(1) - EMGdata.trials.artloc(a,1);
-elseif ~EMGdata.trials.artloc(a,1)
-    x_new = ginput(2); % first select TMS artefact location, then select MEP onset
-    EMGdata.trials.artloc(a,1) = x_new(1,1);
-    EMGdata.trials.ch3_MEP_onset_time(a,1) = x_new(2,1) - EMGdata.trials.artloc(a,1);
-end
-
+%manually select onset and offset point for bursts
+x_new=ginput(1);
+EMGdata.trials.ch3_MEP_onset_time(a,1)=x_new(1) - EMGdata.trials.artloc(a,1);
 MEPchannel=EMGdata.trials.ch3{a,1};
 MEPsearchrange = MEPchannel(x_new(1)* EMGdata.parameters.sampling_rate:(x_new(1)+EMGdata.parameters.pre_TMS_reference_window) * EMGdata.parameters.sampling_rate);
 [max_MEP_value,MEP_max_sample_point] = max(MEPsearchrange);
@@ -333,17 +325,9 @@ function ch4_MEP_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 a=handles.a;
 EMGdata=handles.EMGdata;
-
-% manually select onset point for MEP
-if EMGdata.trials.artloc(a,1)
-    x_new = ginput(1);
-    EMGdata.trials.ch4_MEP_onset_time(a,1) = x_new(1) - EMGdata.trials.artloc(a,1);
-elseif ~EMGdata.trials.artloc(a,1)
-    x_new = ginput(2); % first select TMS artefact location, then select MEP onset
-    EMGdata.trials.artloc(a,1) = x_new(1,1);
-    EMGdata.trials.ch4_MEP_onset_time(a,1) = x_new(2,1) - EMGdata.trials.artloc(a,1);
-end
-
+%manually select onset and offset point for bursts
+x_new=ginput(1);
+EMGdata.trials.ch4_MEP_onset_time(a,1)=x_new(1) - EMGdata.trials.artloc(a,1);
 MEPchannel=EMGdata.trials.ch4{a,1};
 MEPsearchrange = MEPchannel(x_new(1)* EMGdata.parameters.sampling_rate:(x_new(1)+EMGdata.parameters.pre_TMS_reference_window) * EMGdata.parameters.sampling_rate);
 [max_MEP_value,MEP_max_sample_point] = max(MEPsearchrange);

@@ -27,7 +27,7 @@ function findEMG
 
 %% define analysis parameters (edit these)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-parameters.sampling_rate = 5000; % samples per second (Hz)
+parameters.sampling_rate = 2000; % samples per second (Hz)
 parameters.emg_burst_threshold = .3; % raw threshold in mV to consider for EMG
 parameters.emg_onset_std_threshold = 2.5; % number of std to consider for EMG burst onsets/offsets
 parameters.tms_artefact_threshold = .03; % raw threshold magnitude in mV to consider for TMS artefact
@@ -74,7 +74,7 @@ if parameters.TMS
     %trials.RMS_preMEP(:,1) = 0;
     trials.preTMS_period_start(:,1) = 0;
     parameters.artchan_index = input('Enter TMS artefact channel #:');
-    parameters.MEPchan_index = input('Enter MEP channels (e.g. [2] or [1 3 5]):');
+    parameters.MEP_channels = input('Enter MEP channels (e.g. [2] or [1 3 5]):');
 end
 
 %% find photodiode event
@@ -106,7 +106,7 @@ end
 
 %% Find TMS, MEP, and EMG
 function trials = findEvents(trials,parameters) % parameterize these
-%% finds both EMG and TMS events(will flesh out)
+%% finds both EMG and TMS events
 % input
 %     trials:table
 %     parameters:struct
@@ -123,16 +123,16 @@ if parameters.EMG
 end
 
 if parameters.TMS
-    for chan = 1:length(parameters.MEPchan_index)
-        trials.(['ch', num2str(parameters.MEPchan_index(chan)), '_MEP_onset_time'])(:,1) = 0;
-        %trials.(['ch', num2str(parameters.MEPchan_index(chan)), '_EMGburst_offset'])(:,1) = 0;
+    for chan = 1:length(parameters.MEP_channels)
+        trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_onset_time'])(:,1) = 0;
+        %trials.(['ch', num2str(parameters.MEP_channels(chan)), '_EMGburst_offset'])(:,1) = 0;
     end
 end
 
 
 %% identify MEP and non-MEP channels
 if parameters.TMS & parameters.EMG
-    non_MEP_channels = parameters.EMG_burst_channels(parameters.EMG_burst_channels ~= parameters.MEPchan_index); % do not want to detect MEPs as EMG bursts, so ignore MEP channel
+    non_MEP_channels = parameters.EMG_burst_channels(parameters.EMG_burst_channels ~= parameters.MEP_channels); % do not want to detect MEPs as EMG bursts, so ignore MEP channel
 elseif parameters.EMG
     non_MEP_channels = parameters.EMG_burst_channels;
 end
@@ -145,9 +145,9 @@ end
             
             %%% add for loop for looping through MEP channels
             
-            for chan = 1:length(parameters.MEPchan_index(chan))
+            for chan = 1:length(parameters.MEP_channels(chan))
             artchannel = trials.(['ch', num2str(parameters.artchan_index)]){i,1}; % was brackets
-            MEPchannel = trials.(['ch', num2str(parameters.MEPchan_index(chan))]){i,1};
+            MEPchannel = trials.(['ch', num2str(parameters.MEP_channels(chan))]){i,1};
             
             
             [min_artefact_value, TMS_artefact_sample_index] = min(artchannel);
@@ -183,8 +183,8 @@ end
                 % identify MEP onset
                 MEP_onset_index = find(abs(MEPsearchrange) > parameters.MEP_onset_std_threshold * std(abs(preTMS_MEP_reference_data)),1); % first value that exceeds std threshold within rectified MEP search range
                 
-                trials.(['ch', num2str(parameters.MEPchan_index(chan)), '_MEP_onset_time'])(i,1)=((MEP_onset_index + lower_limit_MEP_window)/parameters.sampling_rate) - trials.artloc(i,1); 
-                trials.(['ch', num2str(parameters.MEPchan_index(chan)), '_MEPamplitude'])(i,1)=max_MEP_value - min_MEP_value;
+                trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_onset_time'])(i,1)=((MEP_onset_index + lower_limit_MEP_window)/parameters.sampling_rate) - trials.artloc(i,1); 
+                trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEPamplitude'])(i,1)=max_MEP_value - min_MEP_value;
                 
                 %trials.MEP_onset_time(i,1) = ((MEP_onset_index + lower_limit_MEP_window)/parameters.sampling_rate) - trials.artloc(i,1);            
                 %trials.MEPamplitude(i,1) = max_MEP_value - min_MEP_value;
@@ -197,7 +197,7 @@ end
                     lower_rms_bound = 1;
                 end   
                 RMS_of_preMEP_window = rms(MEPchannel(lower_rms_bound:upper_rms_bound));
-                trials.(['ch',num2str(parameters.MEPchan_index(chan)),'_RMS_preMEP'])(i,1) = RMS_of_preMEP_window;
+                trials.(['ch',num2str(parameters.MEP_channels(chan)),'_RMS_preMEP'])(i,1) = RMS_of_preMEP_window;
 
                 % reject trial if RMS is above tolerance threshold
                 if RMS_of_preMEP_window < parameters.RMS_preMEP_EMG_tolerance
@@ -212,11 +212,11 @@ end
         %% find EMG bursts
         
         % detect EMG burst in MEP channel
-        if parameters.EMG & parameters.TMS & sum(ismember(parameters.EMG_burst_channels, parameters.MEPchan_index)) % if EMG burst detection is required in MEP channel
-                        for chan = 1:length(parameters.MEPchan_index(chan))
+        if parameters.EMG & parameters.TMS & sum(ismember(parameters.EMG_burst_channels, parameters.MEP_channels)) % if EMG burst detection is required in MEP channel
+                        for chan = 1:length(parameters.MEP_channels(chan))
 
            % signal_burst = MEPchannel;
-            signal_burst= trials.(['ch', num2str(parameters.MEPchan_index(chan))]){i,1};
+            signal_burst= trials.(['ch', num2str(parameters.MEP_channels(chan))]){i,1};
 
             if trials.artloc(i,1)
                 % remove MEP to evaluate EMG activity in the absence of TMS and MEP
@@ -233,10 +233,10 @@ end
                 emg_burst_onset_time = (find(abs(signal_burst) > parameters.emg_onset_std_threshold * std(signal_burst),1)) / parameters.sampling_rate; % find first deviation greater than # std.
                 emg_burst_offset_time_from_end = find(abs(signal_burst(end:-1:1)) > parameters.emg_onset_std_threshold * std(signal_burst),1);
                 emg_burst_offset_time_from_start = (length(signal_burst) - emg_burst_offset_time_from_end)/parameters.sampling_rate; % find last deviation greater than # std.
-                trials.(['ch', num2str(parameters.MEPchan_index(chan)) '_EMGburst_onset'])(i,1) = emg_burst_onset_time; % EMG burst onset
-                trials.(['ch', num2str(parameters.MEPchan_index(chan)) '_EMGburst_offset'])(i,1) = emg_burst_offset_time_from_start; % EMG burst offset
+                trials.(['ch', num2str(parameters.MEP_channels(chan)) '_EMGburst_onset'])(i,1) = emg_burst_onset_time; % EMG burst onset
+                trials.(['ch', num2str(parameters.MEP_channels(chan)) '_EMGburst_offset'])(i,1) = emg_burst_offset_time_from_start; % EMG burst offset
                 if trials.stim_onset(i,1)
-                    trials.(['ch', num2str(parameters.MEPchan_index(chan)) '_EMG_RT'])(i,1) = emg_burst_onset_time - trials.stim_onset(i,1);
+                    trials.(['ch', num2str(parameters.MEP_channels(chan)) '_EMG_RT'])(i,1) = emg_burst_onset_time - trials.stim_onset(i,1);
                 end
             end
                         end
