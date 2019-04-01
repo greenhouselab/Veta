@@ -516,7 +516,7 @@ for n=1:subplot_number
     
     if n==1
         title_text = sprintf('Sweep #: %d', a);
-        title(title_text,'FontSize',14, 'FontName', 'Arial', 'FontWeight', 'normal');%make font bigger
+        title_handle = title(title_text,'FontSize',18, 'FontName', 'Arial', 'FontWeight', 'normal');%make font bigger
     end
    
     % add y label
@@ -585,6 +585,8 @@ for n=1:subplot_number
         set(handles.(['ch', num2str(n),'_burst']),'FontWeight', 'bold');
     end        
 
+    % add border to subplots
+    rh = annotation('rectangle', [subplot_position(1)-.11 subplot_position(2)-.045 subplot_position(3)+.2 subplot_position(4)+.055]);  
     
     % add text to plots
     if sum(ismember(EMGdata.trials.Properties.VariableNames,['ch' num2str(n) '_EMG_RT'])) && ~sum(ismember(EMGdata.trials.Properties.VariableNames,['ch' num2str(n) '_RMS_preMEP']))
@@ -614,5 +616,9 @@ for n=1:subplot_number
         th.LineStyle = 'none';
         
     end
+    
+    % move title up
+    title_position = get(title_handle, 'position');
+    set(title_handle, 'position', [title_position(1) title_position(2)+.3 title_position(3)]);
     
 end
