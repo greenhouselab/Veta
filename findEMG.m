@@ -124,8 +124,8 @@ end
 
 if parameters.TMS
     for chan = 1:length(parameters.MEP_channels)
-        trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_onset_time'])(:,1) = 0;
-        %trials.(['ch', num2str(parameters.MEP_channels(chan)), '_EMGburst_offset'])(:,1) = 0;
+        trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_time'])(:,1) = 0;
+        trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_onset_time'])(:,1) = 0;        
     end
 end
 
@@ -183,6 +183,7 @@ end
                 % identify MEP onset
                 MEP_onset_index = find(abs(MEPsearchrange) > parameters.MEP_onset_std_threshold * std(abs(preTMS_MEP_reference_data)),1); % first value that exceeds std threshold within rectified MEP search range
                 
+                trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_time'])(i,1) = (MEP_onset_index + lower_limit_MEP_window)/parameters.sampling_rate;
                 trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_onset_time'])(i,1)=((MEP_onset_index + lower_limit_MEP_window)/parameters.sampling_rate) - trials.artloc(i,1); 
                 trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEPamplitude'])(i,1)=max_MEP_value - min_MEP_value;
                 
