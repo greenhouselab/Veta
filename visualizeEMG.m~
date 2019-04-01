@@ -569,20 +569,16 @@ for n=1:subplot_number
     % position buttons
     if EMGdata.parameters.TMS && ismember(n,EMGdata.parameters.artchan_index)        
         set(handles.(['ch', num2str(n),'_TMS_art']),'Position', [subplot_position(1)-.1 subplot_top-.04 .05 .04]);
-        set(handles.(['ch', num2str(n),'_TMS_art']),'BackgroundColor', 'red');
-        set(handles.(['ch', num2str(n),'_TMS_art']),'FontWeight', 'bold');
+        set(handles.(['ch', num2str(n),'_TMS_art']),'Color', 'red');
     end
     
     if EMGdata.parameters.TMS && ismember(n,EMGdata.parameters.MEP_channels)
         set(handles.(['ch', num2str(n),'_MEP']),'Position', [subplot_position(1)-.1 subplot_top-.08 .05 .04]);
-        set(handles.(['ch', num2str(n),'_MEP']),'BackgroundColor', [.2 .4 1]);
-        set(handles.(['ch', num2str(n),'_MEP']),'FontWeight', 'bold');
+        set(handles.(['ch', num2str(n),'_MEP']),'Color', [subplot_position(1)-.1 subplot_top-.08 .05 .04]);
     end
     
     if EMGdata.parameters.EMG && ismember(n,EMGdata.parameters.EMG_burst_channels)
         set(handles.(['ch', num2str(n),'_burst']),'Position', [subplot_position(1)-.1 subplot_top-.12 .05 .04]);
-        set(handles.(['ch', num2str(n),'_burst']),'BackgroundColor', [.7 .9 1]);
-        set(handles.(['ch', num2str(n),'_burst']),'FontWeight', 'bold');
     end        
 
     
