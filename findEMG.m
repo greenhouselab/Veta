@@ -93,7 +93,7 @@ trials = findEvents(trials,parameters);
 
 %% save file
 outfile=[File(1:end-4),'_preprocessed'];
-save(outfile, 'trials','subject','parameters');
+uisave({'trials','subject','parameters'},outfile);
 end
 
 %% HELPER FUNCTIONS
