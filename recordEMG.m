@@ -1,5 +1,5 @@
 function recordEMG()
-% March 23, 2019 Nick Jackson (njackson@uoregon.edu) & Ian Greenhouse
+% April 1, 2019 Nick Jackson (njackson@uoregon.edu) & Ian Greenhouse
 % (img@uoregon.edu)
 % This function plots and records EMG. TMS interface capabilities are also
 % supported enabling triggering of TMS pulses at prespecified times.
@@ -13,6 +13,8 @@ parameters.sweep_duration = 2; % in seconds
 parameters.EMG_plot_Ylims = [-.1 .1]; % Y axis limits in V
 parameters.xlims=[0 parameters.sweep_duration]; % X axis limits (time in seconds)
 parameters.reference_line = .025; % target +/- EMG amplitude in V
+
+% Save options
 parameters.save_per_sweep = 0; % 1 = saves after each sweep (slows acquisition), 0 = saves at end of session
 
 % The following parameters are for maximum voluntary contraction (MVC)
@@ -33,9 +35,9 @@ delete(instrfindall);
 
 %% Input
 %user is prompted to input practice or run
-practice = input('Practice (1) or run/save (0): ');
+save = input('Practice (0) or Run/save (1): ');
 
-if ~practice
+if save
     save_data = 1;%if not a practice trial, data will be saved
     
     mvc = input('Calculate Maximum Voluntary Contraction (MVC)? Yes(1) or No(0): ');

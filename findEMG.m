@@ -1,4 +1,4 @@
-function findEMG
+function findEMG(filename)
 % March 28, 2019 Nick Jackson (njackson@uoregon.edu) & Ian Greenhouse
 % (img@uoregon.edu)
 % This function finds EMG/MEP events. When script is run, user is prompted to
@@ -27,10 +27,10 @@ function findEMG
 
 %% define analysis parameters (edit these)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-parameters.sampling_rate = 2000; % samples per second (Hz)
-parameters.emg_burst_threshold = .3; % raw threshold in mV to consider for EMG
+parameters.sampling_rate = 5000; % samples per second (Hz)
+parameters.emg_burst_threshold = .3; % raw threshold in V to consider for EMG
 parameters.emg_onset_std_threshold = 2.5; % number of std to consider for EMG burst onsets/offsets
-parameters.tms_artefact_threshold = .03; % raw threshold magnitude in mV to consider for TMS artefact
+parameters.tms_artefact_threshold = .02; % raw threshold magnitude in V to consider for TMS artefact
 parameters.MEP_window_post_artefact = .1; % time in s after TMS to measure MEP in seconds
 parameters.pre_TMS_reference_window = .1;  % time before TMS to serve as reference baseline for MEP onset
 parameters.MEP_onset_std_threshold = 3; % number of std to consider for MEP onsets
@@ -44,10 +44,18 @@ parameters.end_of_MEP_relative_to_TMS = .1; % time in s of end of MEP relative t
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% open file with finder/file explore
-[FileName,PathName] = uigetfile;
-File= fullfile(PathName, FileName);
-load(File);
+%% Parse input
+if (nargin < 1)
+    % open file with finder/file explore
+    [filename, pathname] = uigetfile;  
+    File = fullfile(pathname, filename);
+else
+    
+    File = fullfile(pwd, filename);
+    
+end
+
+load(File);        
 
 %% set number of channels
 trials.trial_accept(:,1) = 1;
@@ -61,7 +69,7 @@ if parameters.EMG
     parameters.EMG_burst_channels = input('Enter the channels to be analyzed for EMG bursts (e.g. [2] or [1 3 5]): ');
 end
 
-parameters.TMS = input('Did you want to detect MEPs? yes(1) or no(0):');
+parameters.TMS = input('Do you want to detect MEPs? yes(1) or no(0):');
 
 % if parameters.TMS 
 %     parameters.MEP_channels = input('Enter the channels to be analyzed for MEPs (e.g. [2] or [1 3 5]): ');
