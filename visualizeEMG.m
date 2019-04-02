@@ -484,7 +484,7 @@ else %if EMG, hide non burst channels
     end
 end
 
-if ~EMGdata.parameters.TMS %no TMS, hide all MEP brush and TMS art buttons
+if ~EMGdata.parameters.MEP %no TMS, hide all MEP brush and TMS art buttons
     for n = 1:4 % 4 is number of plots
         set(handles.(['ch', num2str(n),'_MEP']),'visible','off');
         set(handles.(['ch', num2str(n),'_TMS_art']),'visible','off');
@@ -540,7 +540,7 @@ for n=1:subplot_number
     
     ylim(handles.ylims);
     
-    if EMGdata.parameters.TMS % if TMS was used
+    if EMGdata.parameters.MEP % if TMS was used
         
         % add MEP line        
         if ismember(n,EMGdata.parameters.MEP_channels) && EMGdata.trials.(['ch', num2str(n),'_MEP_time'])(a,1)
@@ -574,13 +574,13 @@ for n=1:subplot_number
     subplot_top = subplot_position(2)+subplot_position(4);
     
     % position buttons
-    if EMGdata.parameters.TMS && ismember(n,EMGdata.parameters.artchan_index)        
+    if EMGdata.parameters.MEP && ismember(n,EMGdata.parameters.artchan_index)        
         set(handles.(['ch', num2str(n),'_TMS_art']),'Position', [subplot_position(1)-.1 subplot_top-.04 .05 .04]);
         set(handles.(['ch', num2str(n),'_TMS_art']),'BackgroundColor', 'red');
         set(handles.(['ch', num2str(n),'_TMS_art']),'FontWeight', 'bold');
     end
     
-    if EMGdata.parameters.TMS && ismember(n,EMGdata.parameters.MEP_channels)
+    if EMGdata.parameters.MEP && ismember(n,EMGdata.parameters.MEP_channels)
         set(handles.(['ch', num2str(n),'_MEP']),'Position', [subplot_position(1)-.1 subplot_top-.08 .05 .04]);
         set(handles.(['ch', num2str(n),'_MEP']),'BackgroundColor', [.2 .4 1]);
         set(handles.(['ch', num2str(n),'_MEP']),'FontWeight', 'bold');
