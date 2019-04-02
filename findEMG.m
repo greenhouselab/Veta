@@ -49,10 +49,8 @@ if (nargin < 1)
     % open file with finder/file explore
     [filename, pathname] = uigetfile;  
     File = fullfile(pathname, filename);
-else
-    
-    File = fullfile(pwd, filename);
-    
+else    
+    File = fullfile(pwd, filename);    
 end
 
 load(File);        

@@ -1,5 +1,5 @@
 function varargout = visualizeEMG(varargin)
-% Last edit made 3/30/19 by IG
+% Last edit made 4/1/19 by IG
 % VISUALIZEEMG MATLAB code for visualizeEMG.fig
 %      VISUALIZEEMG, by itself, creates a new VISUALIZEEMG or raises the existing
 %      singleton*.
@@ -52,8 +52,15 @@ function visualizeEMG_OpeningFcn(hObject, eventdata, handles, varargin)
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to visualizeEMG (see VARARGIN)
 
-[FileName,PathName]=uigetfile;
-File= fullfile(PathName, FileName);
+if numel(varargin)
+    filename = varargin{1};
+    File = fullfile(pwd, filename);
+else
+
+    [FileName,PathName]=uigetfile;
+    File= fullfile(PathName, FileName);
+end
+
 EMGdata=load(File);
 a=1;
 EMGdata.trials.edited(:,1) = zeros;
@@ -514,8 +521,8 @@ for n=1:subplot_number
     x = linspace(0,(length(y)/EMGdata.parameters.sampling_rate),length(y));%y can eventually be samplingrate*sweepduration
     p = plot(x,y,'k');
     
-    if n==1
-        title_text = sprintf('Sweep #: %d', a);
+    title_text = sprintf('Sweep #: %d', a);
+    if n==1        
         title_handle = title(title_text,'FontSize',18, 'FontName', 'Arial', 'FontWeight', 'normal');%make font bigger
     end
    
@@ -586,7 +593,13 @@ for n=1:subplot_number
     end        
 
     % add border to subplots
-    rh = annotation('rectangle', [subplot_position(1)-.11 subplot_position(2)-.045 subplot_position(3)+.2 subplot_position(4)+.055]);  
+    if n<subplot_number
+        rh = annotation('rectangle', [subplot_position(1)-.11 subplot_position(2)-.03 subplot_position(3)+.2 subplot_position(4)+.04]);  
+        set(rh, 'LineWidth',2, 'Color', 'w');
+    elseif n==subplot_number
+        rh = annotation('rectangle', [subplot_position(1)-.11 subplot_position(2)-.045 subplot_position(3)+.2 subplot_position(4)+.055]);  
+        set(rh, 'LineWidth',2, 'Color', 'w');
+    end
     
     % add text to plots
     if sum(ismember(EMGdata.trials.Properties.VariableNames,['ch' num2str(n) '_EMG_RT'])) && ~sum(ismember(EMGdata.trials.Properties.VariableNames,['ch' num2str(n) '_RMS_preMEP']))
@@ -597,7 +610,7 @@ for n=1:subplot_number
         th.LineStyle = 'none';
         
     elseif sum(ismember(EMGdata.trials.Properties.VariableNames,['ch' num2str(n) '_EMG_RT'])) && sum(ismember(EMGdata.trials.Properties.VariableNames,['ch' num2str(n) '_RMS_preMEP']))
-        subplot_text = sprintf(' EMG RT (s): %0.3f\n RMS: %0.3f\n MEP onset (s): %0.3f\n MEP amp. (mV): %0.3f', ...
+        subplot_text = sprintf(' EMG RT (s): %0.3f\n RMS (mV): %0.3f\n MEP onset (s): %0.3f\n MEP amp. (mV): %0.3f', ...
             EMGdata.trials.(['ch' num2str(n) '_EMG_RT'])(a,1), ...
             EMGdata.trials.(['ch',num2str(n),'_RMS_preMEP'])(a,1), ...
             EMGdata.trials.(['ch',num2str(n),'_MEP_onset_time'])(a,1), ...
@@ -618,7 +631,9 @@ for n=1:subplot_number
     end
     
     % move title up
-    title_position = get(title_handle, 'position');
-    set(title_handle, 'position', [title_position(1) title_position(2)+.3 title_position(3)]);
+    if ~exist('title_position')
+        title_position = get(title_handle, 'position');
+    end
+    set(title_handle, 'position', [title_position(1) subplot_position(2)+subplot_position(3)+.4 title_position(3)]);
     
 end
