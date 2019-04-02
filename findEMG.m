@@ -1,6 +1,5 @@
 function findEMG(filename)
-% March 28, 2019 Nick Jackson (njackson@uoregon.edu) & Ian Greenhouse
-% (img@uoregon.edu)
+% 4/2/19 Nick Jackson (njackson@uoregon.edu) & Ian Greenhouse (img@uoregon.edu)
 % This function finds EMG/MEP events. When script is run, user is prompted to
 % open file that was output by EMGrecord.
 % output:
@@ -30,7 +29,7 @@ function findEMG(filename)
 parameters.sampling_rate = 5000; % samples per second (Hz)
 parameters.emg_burst_threshold = .3; % raw threshold in V to consider for EMG
 parameters.emg_onset_std_threshold = 2.5; % number of std to consider for EMG burst onsets/offsets
-parameters.tms_artefact_threshold = .02; % raw threshold magnitude in V to consider for TMS artefact
+parameters.tms_artefact_threshold = .04; % raw threshold magnitude in V to consider for TMS artefact
 parameters.MEP_window_post_artefact = .1; % time in s after TMS to measure MEP in seconds
 parameters.pre_TMS_reference_window = .1;  % time before TMS to serve as reference baseline for MEP onset
 parameters.MEP_onset_std_threshold = 3; % number of std to consider for MEP onsets
@@ -75,9 +74,6 @@ parameters.TMS = input('Do you want to detect MEPs? yes(1) or no(0):');
 
 if parameters.TMS
     trials.artloc(:,1) = 0;
-    %trials.MEP_onset_time(:,1) = 0;
-    %trials.MEPamplitude(:,1) = 0;
-    %trials.RMS_preMEP(:,1) = 0;
     trials.preTMS_period_start(:,1) = 0;
     parameters.artchan_index = input('Enter TMS artefact channel #:');
     parameters.MEP_channels = input('Enter MEP channels (e.g. [2] or [1 3 5]):');
@@ -185,17 +181,17 @@ end
                 MEPsearchrange = MEPchannel(lower_limit_MEP_window:upper_limit_MEP_window);
                 [max_MEP_value,MEP_max_sample_point] = max(MEPsearchrange);
                 [min_MEP_value,MEP_min_sample_point] = min(MEPsearchrange);
+                MEParea = sum(MEPchannel(lower_limit_MEP_window:upper_limit_MEP_window));
 
                 % identify MEP onset
                 MEP_onset_index = find(abs(MEPsearchrange) > parameters.MEP_onset_std_threshold * std(abs(preTMS_MEP_reference_data)),1); % first value that exceeds std threshold within rectified MEP search range
-                
-                trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_time'])(i,1) = (MEP_onset_index + lower_limit_MEP_window)/parameters.sampling_rate;
-                trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_onset_time'])(i,1)=((MEP_onset_index + lower_limit_MEP_window)/parameters.sampling_rate) - trials.artloc(i,1); 
-                trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEPamplitude'])(i,1)=max_MEP_value - min_MEP_value;
-                
-                %trials.MEP_onset_time(i,1) = ((MEP_onset_index + lower_limit_MEP_window)/parameters.sampling_rate) - trials.artloc(i,1);            
-                %trials.MEPamplitude(i,1) = max_MEP_value - min_MEP_value;
-
+                if ~isempty(MEP_onset_index)
+                    trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_time'])(i,1) = (MEP_onset_index + lower_limit_MEP_window)/parameters.sampling_rate;
+                    trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_onset_time'])(i,1) = ((MEP_onset_index + lower_limit_MEP_window)/parameters.sampling_rate) - trials.artloc(i,1); 
+                    trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_amplitude'])(i,1) = max_MEP_value - min_MEP_value;
+                    trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_area'])(i,1) = MEParea;
+                end
+                                
                 %set range to look for preMEP EMG activity to calculate RMS
                 lower_rms_bound = MEP_onset_index - (parameters.preMEP_EMG_activity_window*parameters.sampling_rate);
                 upper_rms_bound = MEP_onset_index;
