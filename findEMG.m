@@ -31,13 +31,13 @@ parameters.MEP = 1; % Detect MEPs: 0 = no, 1 = yes
 parameters.artchan_index = 3;
 parameters.MEP_channels = [1];
 parameters.CSP = 0; % Detect CSP: 0 = no, 1 = yes
-parameters.CSP_channels = [1];
+parameters.CSP_channels = [];
 
 %% define analysis parameters (edit these)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 parameters.sampling_rate = 5000; % samples per second (Hz)
 parameters.emg_burst_threshold = .3; % raw threshold in V to consider for EMG
-parameters.emg_onset_std_threshold = 2.5; % number of std to consider for EMG burst onsets/offsets
+parameters.emg_onset_std_threshold = 2; % number of std to consider for EMG burst onsets/offsets
 parameters.tms_artefact_threshold = .04; % raw threshold magnitude in V to consider for TMS artefact
 parameters.MEP_window_post_artefact = .1; % time in s after TMS to measure MEP in seconds
 parameters.pre_TMS_reference_window = .1;  % time before TMS to serve as reference baseline for MEP onset
@@ -261,9 +261,18 @@ for i = 1:height(trials)
                 trials.(['ch', num2str(parameters.MEP_channels(chan)) '_EMGburst_onset'])(i,1) = emg_burst_onset_time; % EMG burst onset
                 trials.(['ch', num2str(parameters.MEP_channels(chan)) '_EMGburst_offset'])(i,1) = emg_burst_offset_time_from_start; % EMG burst offset
                 trials.(['ch', num2str(parameters.MEP_channels(chan)) '_EMGburst_area'])(i,1) = ...
-                    sum(abs(signal_burst((emg_burst_onset_time * parameters.sampling_rate):(emg_burst_offset_time_from_start * parameters.sampling_rate)))); % EMG burst area
+                    sum(abs(signal_burst(round(emg_burst_onset_time * parameters.sampling_rate):round(emg_burst_offset_time_from_start * parameters.sampling_rate)))); % EMG burst area
+
+                      % ischange may be too process intensive for EMG burst detection
+%                     TF = ischange(signal_burst,'variance','MaxNumChanges',2);                
+%                     EMG_interval = find(TF);
+%                     trials.(['ch', num2str(parameters.MEP_channels(chan)) '_EMGburst_onset'])(i,1) = EMG_interval(1)/parameters.sampling_rate; % EMG burst onset
+%                     trials.(['ch', num2str(parameters.MEP_channels(chan)) '_EMGburst_offset'])(i,1) = EMG_interval(2)/parameters.sampling_rate; % EMG burst offset
+%                     trials.(['ch', num2str(parameters.MEP_channels(chan)) '_EMGburst_area'])(i,1) = ...
+%                         sum(abs(signal_burst(EMG_interval(1):EMG_interval(2)))); % EMG burst area
+
                 if trials.stim_onset(i,1)
-                    trials.(['ch', num2str(parameters.MEP_channels(chan)) '_EMG_RT'])(i,1) = emg_burst_onset_time - trials.stim_onset(i,1);
+                    trials.(['ch', num2str(parameters.MEP_channels(chan)) '_EMG_RT'])(i,1) = trials.(['ch', num2str(parameters.MEP_channels(chan)) '_EMGburst_onset'])(i,1) - trials.stim_onset(i,1);
                 end
             end
         end
@@ -287,10 +296,19 @@ for i = 1:height(trials)
                 emg_burst_offset_time_from_start = (length(signal_burst) - emg_burst_offset_time_from_end)/parameters.sampling_rate; % find last deviation greater than # std.
                 trials.(['ch', num2str(non_MEP_channels(chan)) '_EMGburst_onset'])(i,1) = emg_burst_onset_time;
                 trials.(['ch', num2str(non_MEP_channels(chan)) '_EMGburst_offset'])(i,1) = emg_burst_offset_time_from_start;
-                trials.(['ch', num2str(parameters.MEP_channels(chan)) '_EMGburst_area'])(i,1) = ...
-                    sum(abs(signal_burst((emg_burst_onset_time * parameters.sampling_rate):(emg_burst_offset_time_from_start * parameters.sampling_rate)))); % EMG burst area
+                trials.(['ch', num2str(non_MEP_channels(chan)) '_EMGburst_area'])(i,1) = ...
+                    sum(abs(signal_burst(round(emg_burst_onset_time * parameters.sampling_rate):round(emg_burst_offset_time_from_start * parameters.sampling_rate)))); % EMG burst area
+                      
+                      % ischange may be too process intensive for EMG burst detection
+%                     TF = ischange(signal_burst,'variance','MaxNumChanges',2);                
+%                     EMG_interval = find(TF);
+%                     trials.(['ch', num2str(non_MEP_channels(chan)) '_EMGburst_onset'])(i,1) = EMG_interval(1)/parameters.sampling_rate; % EMG burst onset
+%                     trials.(['ch', num2str(non_MEP_channels(chan)) '_EMGburst_offset'])(i,1) = EMG_interval(2)/parameters.sampling_rate; % EMG burst offset
+%                     trials.(['ch', num2str(non_MEP_channels(chan)) '_EMGburst_area'])(i,1) = ...
+%                         sum(abs(signal_burst(EMG_interval(1):EMG_interval(2)))); % EMG burst area
+
                 if trials.stim_onset(i,1)
-                    trials.(['ch', num2str(non_MEP_channels(chan)) '_EMG_RT'])(i,1) = emg_burst_onset_time - trials.stim_onset(i,1);
+                    trials.(['ch', num2str(non_MEP_channels(chan)) '_EMG_RT'])(i,1) = trials.(['ch', num2str(non_MEP_channels(chan)) '_EMGburst_onset'])(i,1) - trials.stim_onset(i,1);
                 end
             end
         end        
