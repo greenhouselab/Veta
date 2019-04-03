@@ -23,7 +23,7 @@ function varargout = visualizeEMG(varargin)
 
 % Edit the above text to modify the response to help visualizeEMG
 
-% Last Modified by GUIDE v2.5 03-Apr-2019 12:39:28
+% Last Modified by GUIDE v2.5 03-Apr-2019 14:41:17
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -467,7 +467,75 @@ handles.EMGdata = EMGdata;
 plot_figure(EMGdata,handles,a)
 guidata(hObject, handles);
 
-% --- Executes on button press in ch1_clearEMG.
+%% --- Executes on button press in ch1_CSP.
+function ch1_CSP_Callback(hObject, eventdata, handles)
+% hObject    handle to ch1_CSP (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+a=handles.a;
+EMGdata=handles.EMGdata;
+%manually select onset and offset point for bursts
+x_new=ginput(2);
+EMGdata.trials.ch1_CSP_onset(a,1)=x_new(1,1);
+EMGdata.trials.ch1_CSP_offset(a,1)=x_new(2,1);
+EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
+
+handles.EMGdata = EMGdata;
+plot_figure(EMGdata,handles,a)
+guidata(hObject, handles);
+
+%% --- Executes on button press in ch2_CSP.
+function ch2_CSP_Callback(hObject, eventdata, handles)
+% hObject    handle to ch2_CSP (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+a=handles.a;
+EMGdata=handles.EMGdata;
+%manually select onset and offset point for bursts
+x_new=ginput(2);
+EMGdata.trials.ch2_CSP_onset(a,1)=x_new(1,1);
+EMGdata.trials.ch2_CSP_offset(a,1)=x_new(2,1);
+EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
+
+handles.EMGdata = EMGdata;
+plot_figure(EMGdata,handles,a)
+guidata(hObject, handles);
+
+%% --- Executes on button press in ch3_CSP.
+function ch3_CSP_Callback(hObject, eventdata, handles)
+% hObject    handle to ch3_CSP (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+a=handles.a;
+EMGdata=handles.EMGdata;
+%manually select onset and offset point for bursts
+x_new=ginput(2);
+EMGdata.trials.ch3_CSP_onset(a,1)=x_new(1,1);
+EMGdata.trials.ch3_CSP_offset(a,1)=x_new(2,1);
+EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
+
+handles.EMGdata = EMGdata;
+plot_figure(EMGdata,handles,a)
+guidata(hObject, handles);
+
+%% --- Executes on button press in ch4_CSP.
+function ch4_CSP_Callback(hObject, eventdata, handles)
+% hObject    handle to ch4_CSP (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+a=handles.a;
+EMGdata=handles.EMGdata;
+%manually select onset and offset point for bursts
+x_new=ginput(2);
+EMGdata.trials.ch4_CSP_onset(a,1)=x_new(1,1);
+EMGdata.trials.ch4_CSP_offset(a,1)=x_new(2,1);
+EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
+
+handles.EMGdata = EMGdata;
+plot_figure(EMGdata,handles,a)
+guidata(hObject, handles);
+
+%% --- Executes on button press in ch1_clearEMG.
 function ch1_clearEMG_Callback(hObject, eventdata, handles)
 % hObject    handle to ch1_clearEMG (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -484,7 +552,7 @@ handles.EMGdata = EMGdata;
 plot_figure(EMGdata,handles,a);
 guidata(hObject, handles);
 
-% --- Executes on button press in ch2_clearEMG.
+%% --- Executes on button press in ch2_clearEMG.
 function ch2_clearEMG_Callback(hObject, eventdata, handles)
 % hObject    handle to ch2_clearEMG (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -501,8 +569,7 @@ handles.EMGdata = EMGdata;
 plot_figure(EMGdata,handles,a);
 guidata(hObject, handles);
 
-
-% --- Executes on button press in ch3_clearEMG.
+%% --- Executes on button press in ch3_clearEMG.
 function ch3_clearEMG_Callback(hObject, eventdata, handles)
 % hObject    handle to ch3_clearEMG (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -519,7 +586,7 @@ handles.EMGdata = EMGdata;
 plot_figure(EMGdata,handles,a);
 guidata(hObject, handles);
 
-% --- Executes on button press in ch4_clearEMG.
+%% --- Executes on button press in ch4_clearEMG.
 function ch4_clearEMG_Callback(hObject, eventdata, handles)
 % hObject    handle to ch4_clearEMG (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -536,7 +603,7 @@ handles.EMGdata = EMGdata;
 plot_figure(EMGdata,handles,a);
 guidata(hObject, handles);
 
-% --- Executes on button press in ch1_clearTMS.
+%% --- Executes on button press in ch1_clearTMS.
 function ch1_clearTMS_Callback(hObject, eventdata, handles)
 % hObject    handle to ch1_clearTMS (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -555,7 +622,7 @@ handles.EMGdata = EMGdata;
 plot_figure(EMGdata,handles,a);
 guidata(hObject, handles);
 
-% --- Executes on button press in ch2_clearTMS.
+%% --- Executes on button press in ch2_clearTMS.
 function ch2_clearTMS_Callback(hObject, eventdata, handles)
 % hObject    handle to ch2_clearTMS (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -574,7 +641,7 @@ handles.EMGdata = EMGdata;
 plot_figure(EMGdata,handles,a);
 guidata(hObject, handles);
 
-% --- Executes on button press in ch3_clearTMS.
+%% --- Executes on button press in ch3_clearTMS.
 function ch3_clearTMS_Callback(hObject, eventdata, handles)
 % hObject    handle to ch3_clearTMS (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -593,7 +660,7 @@ handles.EMGdata = EMGdata;
 plot_figure(EMGdata,handles,a);
 guidata(hObject, handles);
 
-% --- Executes on button press in ch4_clearTMS.
+%% --- Executes on button press in ch4_clearTMS.
 function ch4_clearTMS_Callback(hObject, eventdata, handles)
 % hObject    handle to ch4_clearTMS (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -612,14 +679,87 @@ handles.EMGdata = EMGdata;
 plot_figure(EMGdata,handles,a);
 guidata(hObject, handles);
 
-%% Plot figure
+%% --- Executes on button press in ch1_clearCSP.
+function ch1_clearCSP_Callback(hObject, eventdata, handles)
+% hObject    handle to ch1_clearCSP (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+a=handles.a;
+EMGdata=handles.EMGdata;
+
+EMGdata.trials.ch1_CSP_onset(a,1)=0;
+EMGdata.trials.ch1_CSP_offset(a,1)=0;
+EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
+
+handles.EMGdata = EMGdata;
+plot_figure(EMGdata,handles,a);
+guidata(hObject, handles);
+
+%% --- Executes on button press in ch2_clearCSP.
+function ch2_clearCSP_Callback(hObject, eventdata, handles)
+% hObject    handle to ch2_clearCSP (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+a=handles.a;
+EMGdata=handles.EMGdata;
+
+EMGdata.trials.ch2_CSP_onset(a,1)=0;
+EMGdata.trials.ch2_CSP_offset(a,1)=0;
+EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
+
+handles.EMGdata = EMGdata;
+plot_figure(EMGdata,handles,a);
+guidata(hObject, handles);
+
+%% --- Executes on button press in ch3_clearCSP.
+function ch3_clearCSP_Callback(hObject, eventdata, handles)
+% hObject    handle to ch3_clearCSP (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+a=handles.a;
+EMGdata=handles.EMGdata;
+
+EMGdata.trials.ch3_CSP_onset(a,1)=0;
+EMGdata.trials.ch3_CSP_offset(a,1)=0;
+EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
+
+handles.EMGdata = EMGdata;
+plot_figure(EMGdata,handles,a);
+guidata(hObject, handles);
+
+%% --- Executes on button press in ch4_clearCSP.
+function ch4_clearCSP_Callback(hObject, eventdata, handles)
+% hObject    handle to ch4_clearCSP (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+a=handles.a;
+EMGdata=handles.EMGdata;
+
+EMGdata.trials.ch4_CSP_onset(a,1)=0;
+EMGdata.trials.ch4_CSP_offset(a,1)=0;
+EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
+
+handles.EMGdata = EMGdata;
+plot_figure(EMGdata,handles,a);
+guidata(hObject, handles);
+
+%%%%%%%%%%%%%%%%%%%%%%% End Callback Functions %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% PLOT FIGURE
 function plot_figure(EMGdata,handles,a)
 ylims=handles.ylims;
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%change this
+% buttons to display
 if ~EMGdata.parameters.CSP
     for n=1:4
-                set(handles.(['ch', num2str(n),'_CSP']),'visible','off');
+        set(handles.(['ch', num2str(n),'_CSP']),'visible','off');
+    end
+else    
+    for n=1:4
+        if ~ismember(n, EMGdata.parameters.CSP_channels)
+            set(handles.(['ch', num2str(n),'_CSP']),'visible','off');
+            set(handles.(['ch', num2str(n),'_clearCSP']),'visible','off');
+        end
     end
 end
 
@@ -627,29 +767,29 @@ end
 if ~EMGdata.parameters.EMG %no EMG, hide all burst brush buttons
     for n = 1:4 % 4 is number of plots
         set(handles.(['ch', num2str(n),'_burst']),'visible','off');
-                set(handles.(['ch', num2str(n),'_clearEMG']),'visible','off');
-
+        set(handles.(['ch', num2str(n),'_clearEMG']),'visible','off');
+        
     end
 else %if EMG, hide non burst channels
     for n = 1:4
         if ~ismember(n,EMGdata.parameters.EMG_burst_channels)
             set(handles.(['ch', num2str(n),'_burst']),'visible','off');
-                            set(handles.(['ch', num2str(n),'_clearEMG']),'visible','off');
+            set(handles.(['ch', num2str(n),'_clearEMG']),'visible','off');
         end
     end
 end
 
-if ~EMGdata.parameters.MEP %no TMS, hide all MEP brush and TMS art buttons
+if ~EMGdata.parameters.MEP %no MEP, hide all MEP brush and TMS art buttons
     for n = 1:4 % 4 is number of plots
         set(handles.(['ch', num2str(n),'_MEP']),'visible','off');
         set(handles.(['ch', num2str(n),'_TMS_art']),'visible','off');
-        set(handles.(['ch', num2str(n),'_clearTMS']),'visible','off');            
-
+        set(handles.(['ch', num2str(n),'_clearTMS']),'visible','off');
+        
     end
 else %if TMS, hide non MEP channels
     for n = 1:4
         if ~ismember(n,EMGdata.parameters.MEP_channels)
-            set(handles.(['ch', num2str(n),'_MEP']),'visible','off');  
+            set(handles.(['ch', num2str(n),'_MEP']),'visible','off');
         end
         if ~ismember(n,EMGdata.parameters.artchan_index)
             set(handles.(['ch', num2str(n),'_TMS_art']),'visible','off');
@@ -660,6 +800,7 @@ else %if TMS, hide non MEP channels
     end
 end
 
+% display photodiode or not
 if any(strcmp('photodiode', EMGdata.trials.Properties.VariableNames))
     photodiode=1;
     subplot_number=EMGdata.parameters.num_channels+1;
@@ -672,7 +813,7 @@ end
 delete(findall(gcf,'type','annotation'))
 
 for n=1:subplot_number
-    subplot_handle = subplot(subplot_number,1,n);    
+    subplot_handle = subplot(subplot_number,1,n);
     if photodiode && n < subplot_number || ~photodiode
         y=EMGdata.trials.(['ch',num2str(n)]){a,1};
     else
@@ -682,13 +823,13 @@ for n=1:subplot_number
     p = plot(x,y,'k');
     
     title_text = sprintf('Sweep #: %d', a);
-    if n==1        
+    if n==1
         title_handle = title(title_text,'FontSize',18, 'FontName', 'Arial', 'FontWeight', 'normal');%make font bigger
     end
-   
+    
     % add y label
     if ~photodiode || n<subplot_number
-        ylabel(['ch ',num2str(n),', mV'],'FontSize',14, 'FontName', 'Arial', 'FontWeight', 'bold');%add channel label
+        ylabel(['ch ',num2str(n),' (mV)'],'FontSize',14, 'FontName', 'Arial', 'FontWeight', 'bold');%add channel label
     elseif photodiode && n==subplot_number
         ylabel('photodiode','FontSize',14, 'FontName', 'Arial', 'FontWeight', 'bold');
     end
@@ -702,12 +843,12 @@ for n=1:subplot_number
     
     if EMGdata.parameters.MEP % if TMS was used
         
-        % add MEP line        
+        % add MEP line
         if ismember(n,EMGdata.parameters.MEP_channels) && EMGdata.trials.(['ch', num2str(n),'_MEP_time'])(a,1)
-            line([EMGdata.trials.(['ch', num2str(n),'_MEP_time'])(a,1)...                
+            line([EMGdata.trials.(['ch', num2str(n),'_MEP_time'])(a,1)...
                 EMGdata.trials.(['ch', num2str(n),'_MEP_time'])(a,1)], ...
                 ylims ,'Color',[.2 .4 1],'Marker','o')
-        end        
+        end
         
         %add TMS artefact
         if EMGdata.trials.artloc(a,1) && EMGdata.parameters.artchan_index==n
@@ -715,7 +856,17 @@ for n=1:subplot_number
         end
     end
     
-    %add EMG burst lines
+    %add CSP patch
+    if EMGdata.parameters.CSP && ismember(n,EMGdata.parameters.CSP_channels)
+        CSP_on=EMGdata.trials.(['ch', num2str(n), '_CSP_onset'])(a,1);
+        CSP_off=EMGdata.trials.(['ch', num2str(n), '_CSP_offset'])(a,1);
+        patch([CSP_on CSP_on CSP_off CSP_off],[ylims(1) ylims(2) ylims(2) ylims(1)],[.9 .6 .9]);
+        if ~EMGdata.parameters.EMG && ~ismember(n,EMGdata.parameters.EMG_burst_channels)
+            set(gca,'children',flipud(get(gca,'children')))%plots patch behind trace
+        end
+    end
+        
+    %add EMG burst patch
     if EMGdata.parameters.EMG && ismember(n,EMGdata.parameters.EMG_burst_channels)
         burst_on=EMGdata.trials.(['ch', num2str(n), '_EMGburst_onset'])(a,1);
         burst_off=EMGdata.trials.(['ch', num2str(n), '_EMGburst_offset'])(a,1);
@@ -723,57 +874,69 @@ for n=1:subplot_number
         set(gca,'children',flipud(get(gca,'children')))%plots patch behind trace
     end
     
+
     %add diode
     if photodiode && n==subplot_number && EMGdata.trials.stim_onset(a,1)
         line([EMGdata.trials.stim_onset(a,1) EMGdata.trials.stim_onset(a,1)], ylims ,'Color','magenta','Marker','o')
-    end            
+    end
     
     % subplot position
     subplot_position = subplot_handle.Position;
     subplot_right_edge = subplot_position(1)+subplot_position(3);
     subplot_top = subplot_position(2)+subplot_position(4);
     
-    % position buttons
-    if EMGdata.parameters.MEP && ismember(n,EMGdata.parameters.artchan_index)        
-        set(handles.(['ch', num2str(n),'_TMS_art']),'Position', [subplot_position(1)-.12 subplot_top-.04 .04 .04]);
+    % position and format buttons
+    button_width = .04;
+    button_height = .04;
+    
+    if EMGdata.parameters.MEP && ismember(n,EMGdata.parameters.artchan_index)
+        set(handles.(['ch', num2str(n),'_TMS_art']),'Position', [subplot_position(1)-(3*button_width) subplot_top-button_height button_width button_height]);
         set(handles.(['ch', num2str(n),'_TMS_art']),'BackgroundColor', 'red');
         set(handles.(['ch', num2str(n),'_TMS_art']),'FontWeight', 'bold');
         
-        set(handles.(['ch', num2str(n),'_clearTMS']),'Position', [subplot_position(1)-.08 subplot_top-.04 .04 .04]);
+        set(handles.(['ch', num2str(n),'_clearTMS']),'Position', [subplot_position(1)-(2*button_width) subplot_top-button_height button_width button_height]);
         set(handles.(['ch', num2str(n),'_clearTMS']),'BackgroundColor', 'red');
         set(handles.(['ch', num2str(n),'_clearTMS']),'FontWeight', 'bold');
     end
     
     if EMGdata.parameters.MEP && ismember(n,EMGdata.parameters.MEP_channels)
-        set(handles.(['ch', num2str(n),'_MEP']),'Position', [subplot_position(1)-.12 subplot_top-.08 .04 .04]);
+        set(handles.(['ch', num2str(n),'_MEP']),'Position', [subplot_position(1)-(3*button_width) subplot_top-(2*button_height) button_width button_height]);
         set(handles.(['ch', num2str(n),'_MEP']),'BackgroundColor', [.2 .4 1]);
         set(handles.(['ch', num2str(n),'_MEP']),'FontWeight', 'bold');
         
-        set(handles.(['ch', num2str(n),'_clearTMS']),'Position', [subplot_position(1)-.08 subplot_top-.08 .04 .04]);
+        set(handles.(['ch', num2str(n),'_clearTMS']),'Position', [subplot_position(1)-(2*button_width) subplot_top-(2*button_height) button_width button_height]);
         set(handles.(['ch', num2str(n),'_clearTMS']),'BackgroundColor', [.2 .4 1]);
         set(handles.(['ch', num2str(n),'_clearTMS']),'FontWeight', 'bold');
     end
     
     if EMGdata.parameters.EMG && ismember(n,EMGdata.parameters.EMG_burst_channels)
-        set(handles.(['ch', num2str(n),'_burst']),'Position', [subplot_position(1)-.12 subplot_top-.12 .04 .04]);
+        set(handles.(['ch', num2str(n),'_burst']),'Position', [subplot_position(1)-(3*button_width) subplot_top-(3*button_height)  button_width button_height]);
         set(handles.(['ch', num2str(n),'_burst']),'BackgroundColor', [.7 .9 1]);
         set(handles.(['ch', num2str(n),'_burst']),'FontWeight', 'bold');
         
-        set(handles.(['ch', num2str(n),'_clearEMG']),'Position', [subplot_position(1)-.08 subplot_top-.12 .04 .04]);
+        set(handles.(['ch', num2str(n),'_clearEMG']),'Position', [subplot_position(1)-(2*button_width) subplot_top-(3*button_height) button_width button_height]);
         set(handles.(['ch', num2str(n),'_clearEMG']),'BackgroundColor', [.7 .9 1]);
         set(handles.(['ch', num2str(n),'_clearEMG']),'FontWeight', 'bold');
-    end    
-    %%%%%%%%%%%%%%%%%
-    % add section for CSP
-
-    % add border to subplots
-    if n<subplot_number
-        rh = annotation('rectangle', [subplot_position(1)-.11 subplot_position(2)-.03 subplot_position(3)+.2 subplot_position(4)+.04]);  
-        set(rh, 'LineWidth',2, 'Color', 'w');
-    elseif n==subplot_number
-        rh = annotation('rectangle', [subplot_position(1)-.11 subplot_position(2)-.045 subplot_position(3)+.2 subplot_position(4)+.055]);  
-        set(rh, 'LineWidth',2, 'Color', 'w');
     end
+    
+    if EMGdata.parameters.CSP && ismember(n,EMGdata.parameters.CSP_channels)
+        set(handles.(['ch', num2str(n),'_CSP']),'Position', [subplot_position(1)-(3*button_width) subplot_top-(4*button_height)  button_width button_height]);
+        set(handles.(['ch', num2str(n),'_CSP']),'BackgroundColor', [.9 .6 .9]);
+        set(handles.(['ch', num2str(n),'_CSP']),'FontWeight', 'bold');
+        
+        set(handles.(['ch', num2str(n),'_clearCSP']),'Position', [subplot_position(1)-(2*button_width) subplot_top-(4*button_height) button_width button_height]);
+        set(handles.(['ch', num2str(n),'_clearCSP']),'BackgroundColor', [.9 .6 .9]);
+        set(handles.(['ch', num2str(n),'_clearCSP']),'FontWeight', 'bold');
+    end
+    
+    %     % add border to subplots (this screws up the zoom capabilities)
+    %     if n<subplot_number
+    %         rh = annotation('rectangle', [subplot_position(1)-.11 subplot_position(2)-.03 subplot_position(3)+.2 subplot_position(4)+.04]);
+    %         set(rh, 'LineWidth',2, 'Color', 'w');
+    %     elseif n==subplot_number
+    %         rh = annotation('rectangle', [subplot_position(1)-.11 subplot_position(2)-.045 subplot_position(3)+.2 subplot_position(4)+.055]);
+    %         set(rh, 'LineWidth',2, 'Color', 'w');
+    %     end
     
     % add text to plots
     if sum(ismember(EMGdata.trials.Properties.VariableNames,['ch' num2str(n) '_EMG_RT'])) && ~sum(ismember(EMGdata.trials.Properties.VariableNames,['ch' num2str(n) '_RMS_preMEP']))
@@ -789,7 +952,7 @@ for n=1:subplot_number
             EMGdata.trials.(['ch',num2str(n),'_RMS_preMEP'])(a,1), ...
             EMGdata.trials.(['ch',num2str(n),'_MEP_onset_time'])(a,1), ...
             EMGdata.trials.(['ch',num2str(n),'_MEP_amplitude'])(a,1));
-                 
+        
         th = annotation('textbox', [subplot_right_edge subplot_top-.1 .09 .1], 'String', subplot_text);
         th.LineStyle = 'none';
         
@@ -798,8 +961,8 @@ for n=1:subplot_number
             EMGdata.trials.(['ch',num2str(n),'_RMS_preMEP'])(a,1), ...
             EMGdata.trials.(['ch',num2str(n),'_MEP_onset_time'])(a,1), ...
             EMGdata.trials.(['ch',num2str(n),'_MEP_amplitude'])(a,1));
-           
-        th = annotation('textbox', [subplot_right_edge subplot_top-.1 .09 .1], 'String', subplot_text);        
+        
+        th = annotation('textbox', [subplot_right_edge subplot_top-.1 .09 .1], 'String', subplot_text);
         th.LineStyle = 'none';
         
     end
@@ -811,31 +974,3 @@ for n=1:subplot_number
     set(title_handle, 'position', [title_position(1) subplot_position(2)+subplot_position(3)+.4 title_position(3)]);
     
 end
-
-
-% --- Executes on button press in ch1_CSP.
-function ch1_CSP_Callback(hObject, eventdata, handles)
-% hObject    handle to ch1_CSP (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-% --- Executes on button press in ch2_CSP.
-function ch2_CSP_Callback(hObject, eventdata, handles)
-% hObject    handle to ch2_CSP (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-% --- Executes on button press in ch3_CSP.
-function ch3_CSP_Callback(hObject, eventdata, handles)
-% hObject    handle to ch3_CSP (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-% --- Executes on button press in ch4_CSP.
-function ch4_CSP_Callback(hObject, eventdata, handles)
-% hObject    handle to ch4_CSP (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)

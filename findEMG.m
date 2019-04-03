@@ -30,8 +30,8 @@ parameters.EMG_burst_channels = [1 2];
 parameters.MEP = 1; % Detect MEPs: 0 = no, 1 = yes
 parameters.artchan_index = 3;
 parameters.MEP_channels = [1];
-parameters.CSP = 0; % Detect CSP: 0 = no, 1 = yes
-parameters.CSP_channels = [];
+parameters.CSP = 1; % Detect CSP: 0 = no, 1 = yes
+parameters.CSP_channels = [1];
 
 %% define analysis parameters (edit these)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
