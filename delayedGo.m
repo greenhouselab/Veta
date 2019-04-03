@@ -1,4 +1,4 @@
-function delayedGo0319()
+function delayedGo()
 %  pause off;
 
 %% parameters
