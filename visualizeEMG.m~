@@ -64,8 +64,6 @@ end
 EMGdata=load(File);
 a=1;
 EMGdata.trials.edited(:,1) = zeros;
-
-% this is where to set the y-axis limits for channel plots
 ylims = [-1 1; -1 1; -1 1; -1 1];
 
 handles.ylims=ylims;
@@ -849,7 +847,7 @@ for n=1:subplot_number
         xlabel('Time (s)', 'FontSize',14, 'FontName', 'Arial', 'FontWeight', 'bold');
     end
     
-    ylim(handles.ylims(n,:));
+    ylim(handles.ylims);
     
     if EMGdata.parameters.MEP % if TMS was used
         
@@ -870,7 +868,7 @@ for n=1:subplot_number
     if EMGdata.parameters.CSP && ismember(n,EMGdata.parameters.CSP_channels)
         CSP_on=EMGdata.trials.(['ch', num2str(n), '_CSP_onset'])(a,1);
         CSP_off=EMGdata.trials.(['ch', num2str(n), '_CSP_offset'])(a,1);
-        patch([CSP_on CSP_on CSP_off CSP_off],[ylims(n, 1) ylims(n, 2) ylims(n, 2) ylims(n, 1)],CSP_color);
+        patch([CSP_on CSP_on CSP_off CSP_off],[ylims(n, :)(1) ylims(n, :)(2) ylims(n, :)(2) ylims(n, :)(1)],CSP_color);
         if EMGdata.parameters.EMG && ~ismember(n,EMGdata.parameters.EMG_burst_channels)
             set(gca,'children',flipud(get(gca,'children')))%plots patch behind trace
         end
@@ -880,14 +878,14 @@ for n=1:subplot_number
     if EMGdata.parameters.EMG && ismember(n,EMGdata.parameters.EMG_burst_channels)
         burst_on=EMGdata.trials.(['ch', num2str(n), '_EMGburst_onset'])(a,1);
         burst_off=EMGdata.trials.(['ch', num2str(n), '_EMGburst_offset'])(a,1);
-        patch([burst_on burst_on burst_off burst_off],[ylims(n, 1) ylims(n, 2) ylims(n, 2) ylims(n, 1)],EMG_color);
+        patch([burst_on burst_on burst_off burst_off],[ylims(1) ylims(2) ylims(2) ylims(1)],EMG_color);
         set(gca,'children',flipud(get(gca,'children')))%plots patch behind trace
     end
     
 
     %add diode
     if photodiode && n==subplot_number && EMGdata.trials.stim_onset(a,1)
-        line([EMGdata.trials.stim_onset(a,1) EMGdata.trials.stim_onset(a,1)], ylims(n, :) ,'Color',diode_color,'Marker','o')
+        line([EMGdata.trials.stim_onset(a,1) EMGdata.trials.stim_onset(a,1)], ylims ,'Color',diode_color,'Marker','o')
     end
     
     % subplot position

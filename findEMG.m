@@ -13,7 +13,7 @@ function findEMG(filename)
 %           EMG burst offset for channel (# specified)
 %       RMS_preMEP: double
 %           Root mean square of signal in epoch preceding MEP
-%       MEP_onset_time: double
+%       MEP_latency: double
 %           location of MEP in seconds
 %       artloc: double
 %           location of TMS artefact, used to find MEPloc
@@ -30,8 +30,8 @@ parameters.EMG_burst_channels = [1 2];
 parameters.MEP = 1; % Detect MEPs: 0 = no, 1 = yes
 parameters.artchan_index = 3;
 parameters.MEP_channels = [1];
-parameters.CSP = 1; % Detect CSP: 0 = no, 1 = yes
-parameters.CSP_channels = [1];
+parameters.CSP = 0; % Detect CSP: 0 = no, 1 = yes
+parameters.CSP_channels = [0];
 
 %% define analysis parameters (edit these)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -42,7 +42,7 @@ parameters.tms_artefact_threshold = .04; % raw threshold magnitude in V to consi
 parameters.MEP_window_post_artefact = .1; % time in s after TMS to measure MEP in seconds
 parameters.pre_TMS_reference_window = .1;  % time before TMS to serve as reference baseline for MEP onset
 parameters.MEP_onset_std_threshold = 3; % number of std to consider for MEP onsets
-parameters.min_TMS_to_MEP_onset_time = .018; % number of secs after TMS to begin MEP onset detection
+parameters.min_TMS_to_MEP_latency = .018; % number of secs after TMS to begin MEP onset detection
 parameters.preMEP_EMG_activity_window = .1; % time before MEP to inspect for EMG activity
 parameters.RMS_preMEP_EMG_tolerance = .05; % root mean square EMG tolerance for including MEP
 
@@ -149,7 +149,7 @@ end
 if parameters.MEP
     for chan = 1:length(parameters.MEP_channels)
         trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_time'])(:,1) = 0;
-        trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_onset_time'])(:,1) = 0;
+        trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_latency'])(:,1) = 0;
     end
 end
 
@@ -181,7 +181,7 @@ for i = 1:height(trials)
                 trials.artloc(i,1) = TMS_artefact_sample_index/parameters.sampling_rate;%artefact location scaled for visualization
                 
                 %define MEP search range
-                lower_limit_MEP_window = TMS_artefact_sample_index + (parameters.min_TMS_to_MEP_onset_time * parameters.sampling_rate);
+                lower_limit_MEP_window = TMS_artefact_sample_index + (parameters.min_TMS_to_MEP_latency * parameters.sampling_rate);
                 upper_limit_MEP_window = TMS_artefact_sample_index + (parameters.MEP_window_post_artefact * parameters.sampling_rate);
                 
                 % define lower limit of pre-TMS artefact reference window
@@ -210,7 +210,7 @@ for i = 1:height(trials)
                 MEP_onset_index = find(abs(MEPsearchrange) > parameters.MEP_onset_std_threshold * std(abs(preTMS_MEP_reference_data)),1); % first value that exceeds std threshold within rectified MEP search range
                 if ~isempty(MEP_onset_index)
                     trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_time'])(i,1) = (MEP_onset_index + lower_limit_MEP_window)/parameters.sampling_rate;
-                    trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_onset_time'])(i,1) = ((MEP_onset_index + lower_limit_MEP_window)/parameters.sampling_rate) - trials.artloc(i,1);
+                    trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_latency'])(i,1) = ((MEP_onset_index + lower_limit_MEP_window)/parameters.sampling_rate) - trials.artloc(i,1);
                     trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_amplitude'])(i,1) = max_MEP_value - min_MEP_value;
                     trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_area'])(i,1) = MEParea;
                 end
