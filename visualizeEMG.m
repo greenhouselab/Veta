@@ -832,11 +832,6 @@ for n=1:subplot_number
     x = linspace(0,(length(y)/EMGdata.parameters.sampling_rate),length(y));%y can eventually be samplingrate*sweepduration
     p = plot(x,y,'k');
     
-    title_text = sprintf('Sweep #: %d', a);
-    if n==1
-        title_handle = title(title_text,'FontSize',18, 'FontName', 'Arial', 'FontWeight', 'normal');%make font bigger
-    end
-    
     % add y label
     if ~photodiode || n<subplot_number
         ylabel(['ch ',num2str(n),' (mV)'],'FontSize',14, 'FontName', 'Arial', 'FontWeight', 'bold');%add channel label
@@ -949,6 +944,13 @@ for n=1:subplot_number
     %     end
     
     % add text to plots
+    
+    title_text = sprintf('Sweep #: %d', a);
+    if n==1
+        th = annotation('textbox', [(subplot_position(1)+subplot_position(3))/2 subplot_top+.02 .09 .02], 'String', title_text,'FontSize',18, 'FontName', 'Arial');
+        th.LineStyle = 'none';
+    end
+    
     if sum(ismember(EMGdata.trials.Properties.VariableNames,['ch' num2str(n) '_EMG_RT'])) && ~sum(ismember(EMGdata.trials.Properties.VariableNames,['ch' num2str(n) '_RMS_preMEP']))
         subplot_text = sprintf(' EMG RT (s): %0.3f\n EMG duration (s): %0.3f\n EMG burst area: %0.3f', ...
             EMGdata.trials.(['ch' num2str(n) '_EMG_RT'])(a,1), ...
@@ -968,7 +970,7 @@ for n=1:subplot_number
             EMGdata.trials.(['ch',num2str(n),'_MEP_amplitude'])(a,1), ...
             EMGdata.trials.(['ch',num2str(n),'_MEP_area'])(a,1));
         
-        th = annotation('textbox', [subplot_right_edge subplot_top-.1 .09 .1], 'String', subplot_text);
+        th = annotation('textbox', [subplot_right_edge subplot_top-.1 .1 .1], 'String', subplot_text);
         th.LineStyle = 'none';
         
     elseif sum(ismember(EMGdata.trials.Properties.VariableNames,['ch' num2str(n) '_RMS_preMEP']))
@@ -978,7 +980,7 @@ for n=1:subplot_number
             EMGdata.trials.(['ch',num2str(n),'_MEP_amplitude'])(a,1), ...
             EMGdata.trials.(['ch',num2str(n),'_MEP_area'])(a,1));
         
-        th = annotation('textbox', [subplot_right_edge subplot_top-.1 .09 .1], 'String', subplot_text);
+        th = annotation('textbox', [subplot_right_edge subplot_top-.1 .1 .1], 'String', subplot_text);
         th.LineStyle = 'none';
         
     elseif sum(ismember(EMGdata.trials.Properties.VariableNames,['ch' num2str(n) '_CSP_onset']))
@@ -988,11 +990,5 @@ for n=1:subplot_number
         th = annotation('textbox', [subplot_right_edge subplot_top-.1 .09 .1], 'String', subplot_text);
         th.LineStyle = 'none';        
     end
-    
-    % move title up
-    if ~exist('title_position')
-        title_position = get(title_handle, 'position');
-    end
-    set(title_handle, 'position', [title_position(1) subplot_position(2)+subplot_position(3)+.4 title_position(3)]);
     
 end
