@@ -785,7 +785,6 @@ end
 if ~EMGdata.parameters.MEP %no MEP, hide all MEP brush and TMS art buttons
     for n = 1:4 % 4 is number of plots
         set(handles.(['ch', num2str(n),'_MEP']),'visible','off');
-        set(handles.(['ch', num2str(n),'_TMS_art']),'visible','off');
         set(handles.(['ch', num2str(n),'_clearTMS']),'visible','off');
         
     end

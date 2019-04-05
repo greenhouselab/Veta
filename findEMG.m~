@@ -321,16 +321,12 @@ for i = 1:height(trials)
             if trials.artloc(i,1)
                 csp_signal = trials.(['ch', num2str(parameters.CSP_channels(chan))]){i,1};
                 [IUPPER, ILOWER, UPPERSUM] = cusum(abs(csp_signal));
-                [peak1, csp_start_loc] = findpeaks(UPPERSUM, 'MinPeakProminence', 9, 'NPeaks', 1);
-                if csp_start_loc
-                    [peak2, csp_end_loc] = findpeaks(-1*UPPERSUM(csp_start_loc:end), csp_start_loc:length(UPPERSUM), 'MinPeakProminence', 5, 'NPeaks', 1);
-                end
+                [peak1, csp_start_loc] = findpeaks(UPPERSUM, 'MinPeakWidth',.05*parameters.sampling_rate);
+                [peak2, csp_end_loc] = findpeaks(-1*UPPERSUM, 'MinPeakWidth',.05*parameters.sampling_rate);
 %                     TF = ischange(csp_signal,'variance','MaxNumChanges',2);                
 %                     CSP_interval = find(TF);
-                if csp_start_loc & csp_end_loc,
-                    trials.(['ch', num2str(parameters.CSP_channels(chan)) '_CSP_onset'])(i,1) = csp_start_loc/parameters.sampling_rate;
-                    trials.(['ch', num2str(parameters.CSP_channels(chan)) '_CSP_offset'])(i,1) = csp_end_loc/parameters.sampling_rate;
-                end
+                trials.(['ch', num2str(parameters.CSP_channels(chan)) '_CSP_onset'])(i,1) = csp_start_loc;
+                trials.(['ch', num2str(parameters.CSP_channels(chan)) '_CSP_offset'])(i,1) = csp_end_loc;
             else
                 artchannel = trials.(['ch', num2str(parameters.artchan_index)]){i,1};                            
                 [min_artefact_value, TMS_artefact_sample_index] = min(artchannel);
@@ -339,16 +335,12 @@ for i = 1:height(trials)
                     trials.artloc(i,1) = TMS_artefact_sample_index/parameters.sampling_rate;%artefact location scaled for visualization
                     csp_signal = trials.(['ch', num2str(parameters.CSP_channels(chan))]){i,1};
                     [IUPPER, ILOWER, UPPERSUM] = cusum(abs(csp_signal));
-                    [peak1, csp_start_loc] = findpeaks(UPPERSUM,'MinPeakProminence', 9, 'NPeaks', 1);
-                    if csp_start_loc
-                        [peak2, csp_end_loc] = findpeaks(-1*UPPERSUM(csp_start_loc:end), csp_start_loc:length(UPPERSUM), 'MinPeakProminence', 5, 'NPeaks', 1);
-                    end
+                    [peak1, csp_start_loc] = findpeaks(UPPERSUM, 'MinPeakWidth',.05*parameters.sampling_rate);
+                    [peak2, csp_end_loc] = findpeaks(-1*UPPERSUM, 'MinPeakWidth',.05*parameters.sampling_rate);
 %                     TF = ischange(csp_signal,'variance','MaxNumChanges',2);                
 %                     CSP_interval = find(TF);
-                    if csp_start_loc & csp_end_loc,
-                        trials.(['ch', num2str(parameters.CSP_channels(chan)) '_CSP_onset'])(i,1) = csp_start_loc/parameters.sampling_rate;
-                        trials.(['ch', num2str(parameters.CSP_channels(chan)) '_CSP_offset'])(i,1) = csp_end_loc/parameters.sampling_rate;
-                    end
+                    trials.(['ch', num2str(parameters.CSP_channels(chan)) '_CSP_onset'])(i,1) = csp_start_loc;
+                    trials.(['ch', num2str(parameters.CSP_channels(chan)) '_CSP_offset'])(i,1) = csp_end_loc;
                 end
             end
             
