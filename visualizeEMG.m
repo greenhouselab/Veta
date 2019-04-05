@@ -123,19 +123,19 @@ for n = 1:4
     set(handles.(['ch', num2str(n),'_CSP']),'visible','off');
     set(handles.(['ch', num2str(n),'_clearCSP']),'visible','off');    
 
-    if ismember(n,EMGdata.parameters.EMG_burst_channels)
+    if EMGdata.parameters.EMG & ismember(n,EMGdata.parameters.EMG_burst_channels)
         set(handles.(['ch', num2str(n),'_burst']),'visible','on');
         set(handles.(['ch', num2str(n),'_clearEMG']),'visible','on');
     end
-    if ismember(n,EMGdata.parameters.MEP_channels)
+    if EMGdata.parameters.MEP & ismember(n,EMGdata.parameters.MEP_channels)
         set(handles.(['ch', num2str(n),'_MEP']),'visible','on');
         set(handles.(['ch', num2str(n),'_clearMEP']),'visible','on');
     end
-    if ismember(n,EMGdata.parameters.artchan_index)
+    if EMGdata.parameters.artchan_index & ismember(n,EMGdata.parameters.artchan_index)
         set(handles.(['ch', num2str(n),'_TMS_art']),'visible','on');
         set(handles.(['ch', num2str(n),'_clearTMSart']),'visible','on');
     end
-    if ismember(n,EMGdata.parameters.CSP_channels)
+    if EMGdata.parameters.CSP & ismember(n,EMGdata.parameters.CSP_channels)
         set(handles.(['ch', num2str(n),'_CSP']),'visible','on');
         set(handles.(['ch', num2str(n),'_clearCSP']),'visible','on');
     end

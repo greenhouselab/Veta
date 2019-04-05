@@ -74,7 +74,7 @@ parameters.num_channels = sum(contains(trials.Properties.VariableNames,chs));
 if use_command_line
     parameters.EMG = input('Do you want to find electromyographic (EMG) bursts? yes(1) or no(0):');
 
-    if parameters.EMG & ~parameters.EMG_burst_channels
+    if parameters.EMG & ~isfield(parameters, 'EMG_burst_channels')
         parameters.EMG_burst_channels = input('Enter the channels to be analyzed for EMG bursts (e.g. [2] or [1 3 5]): ');
     end
     
@@ -84,16 +84,16 @@ if use_command_line
     if parameters.MEP | parameters.CSP
         trials.artloc(:,1) = 0;
         trials.preTMS_period_start(:,1) = 0;
-        if ~parameters.artchan_index
+        if ~isfield(parameters,'artchan_index')
             parameters.artchan_index = input('Enter TMS artefact channel #:');
         end
     end
 
-    if parameters.MEP & ~parameters.MEP_channels
+    if parameters.MEP & ~isfield(parameters, 'MEP_channels')
         parameters.MEP_channels = input('Enter MEP channels (e.g. [2] or [1 3 5]):');
     end
 
-    if parameters.CSP & ~parameters.CSP_channels
+    if parameters.CSP & ~isfield(parameters,'CSP_channels')
         parameters.CSP_channels = input('Enter CSP channels (e.g. [2] or [1 3 5]):');
     end
 end
