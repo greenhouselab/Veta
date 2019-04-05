@@ -155,7 +155,7 @@ end
 delete(findall(gcf,'type','annotation'))
 
 % set colors for markers and buttons
-MEP_color = [.3 .5 1];
+MEP_color = [1 1 .5];
 TMS_color = [1 0 0];
 EMG_color = [.9 .7 1];
 CSP_color = [.7 1 .5];
@@ -189,9 +189,17 @@ for n=1:subplot_number
     if EMGdata.parameters.MEP % if TMS was used        
         % add MEP line
         if ismember(n,EMGdata.parameters.MEP_channels) && EMGdata.trials.(['ch', num2str(n),'_MEP_time'])(a,1)
-            line([EMGdata.trials.(['ch', num2str(n),'_MEP_time'])(a,1)...
-                EMGdata.trials.(['ch', num2str(n),'_MEP_time'])(a,1)], ...
-                ylims(n, :) ,'Color',MEP_color,'Marker','o')
+            MEP_on = EMGdata.trials.(['ch', num2str(n),'_MEP_time'])(a,1);
+            MEP_off = EMGdata.trials.(['ch', num2str(n),'_MEP_time'])(a,1) + EMGdata.trials.(['ch', num2str(n),'_MEP_offset'])(a,1);
+            patch([MEP_on MEP_on MEP_off MEP_off], [ylims(n, 1) ylims(n, 2) ylims(n, 2) ylims(n, 1)], MEP_color);
+            if EMGdata.parameters.EMG && ~ismember(n,EMGdata.parameters.EMG_burst_channels)
+                set(gca,'children',flipud(get(gca,'children')))%plots patch behind trace
+            elseif ~EMGdata.parameters.EMG
+                set(gca,'children',flipud(get(gca,'children')))%plots patch behind trace
+            end                     
+%             line([EMGdata.trials.(['ch', num2str(n),'_MEP_time'])(a,1)...
+%                 EMGdata.trials.(['ch', num2str(n),'_MEP_time'])(a,1)], ...
+%                 ylims(n, :) ,'Color',MEP_color,'Marker','o')
         end
     end
     
@@ -283,8 +291,7 @@ for n=1:subplot_number
     %         set(rh, 'LineWidth',2, 'Color', 'w');
     %     end
     
-    % add text to plots
-    
+    % add text to plots    
     title_text = sprintf('Sweep #: %d', a);
     if n==1
         th = annotation('textbox', [(subplot_position(1)+subplot_position(3))/2 subplot_top+.02 .09 .02], 'String', title_text,'FontSize',18, 'FontName', 'Arial');
@@ -301,24 +308,26 @@ for n=1:subplot_number
         th.LineStyle = 'none';
         
     elseif sum(ismember(EMGdata.trials.Properties.VariableNames,['ch' num2str(n) '_EMG_RT'])) && sum(ismember(EMGdata.trials.Properties.VariableNames,['ch' num2str(n) '_RMS_preMEP']))
-        subplot_text = sprintf(' EMG RT (s): %0.3f\n EMG duration (s): %0.3f\n EMG burst area: %0.3f\n\n preTMS RMS (mV): %0.3f\n MEP latency (s): %0.3f\n MEP amp. (mV): %0.3f\n MEP area: %0.3f', ...
+        subplot_text = sprintf(' EMG RT (s): %0.3f\n EMG duration (s): %0.3f\n EMG burst area: %0.3f\n\n preTMS RMS (mV): %0.3f\n MEP latency (s): %0.3f\n MEP amp. (mV): %0.3f\n MEP area: %0.3f\n MEP duration (s): %0.3f', ...
             EMGdata.trials.(['ch' num2str(n) '_EMG_RT'])(a,1), ...
             EMGdata.trials.(['ch' num2str(n) '_EMGburst_offset'])(a,1) - EMGdata.trials.(['ch' num2str(n) '_EMGburst_onset'])(a,1), ...
             EMGdata.trials.(['ch' num2str(n) '_EMGburst_area'])(a,1), ...
             EMGdata.trials.(['ch',num2str(n),'_RMS_preMEP'])(a,1), ...
             EMGdata.trials.(['ch',num2str(n),'_MEP_latency'])(a,1), ...
             EMGdata.trials.(['ch',num2str(n),'_MEP_amplitude'])(a,1), ...
-            EMGdata.trials.(['ch',num2str(n),'_MEP_area'])(a,1));
+            EMGdata.trials.(['ch',num2str(n),'_MEP_area'])(a,1), ...
+            EMGdata.trials.(['ch',num2str(n),'_MEP_duration'])(a,1));
         
         th = annotation('textbox', [subplot_right_edge subplot_top-.1 .1 .1], 'String', subplot_text);
         th.LineStyle = 'none';
         
     elseif sum(ismember(EMGdata.trials.Properties.VariableNames,['ch' num2str(n) '_MEP_latency']))
-        subplot_text = sprintf(' preTMS RMS: %0.3f\n MEP latency (s): %0.3f\n MEP amp. (mV): %0.3f\n MEP area: %0.3f', ...
+        subplot_text = sprintf(' preTMS RMS: %0.3f\n MEP latency (s): %0.3f\n MEP amp. (mV): %0.3f\n MEP area: %0.3f\n MEP duration (s): %0.3f', ...
             EMGdata.trials.(['ch',num2str(n),'_RMS_preMEP'])(a,1), ...
             EMGdata.trials.(['ch',num2str(n),'_MEP_latency'])(a,1), ...
             EMGdata.trials.(['ch',num2str(n),'_MEP_amplitude'])(a,1), ...
-            EMGdata.trials.(['ch',num2str(n),'_MEP_area'])(a,1));
+            EMGdata.trials.(['ch',num2str(n),'_MEP_area'])(a,1), ...
+            EMGdata.trials.(['ch',num2str(n),'_MEP_duration'])(a,1));
         
         th = annotation('textbox', [subplot_right_edge subplot_top-.1 .1 .1], 'String', subplot_text);
         th.LineStyle = 'none';
@@ -602,15 +611,18 @@ function ch1_MEP_Callback(hObject, eventdata, handles)
 a = handles.a;
 EMGdata = handles.EMGdata;
 % manually select onset point for MEP
-x_new = ginput(1);
+x_new = ginput(2);
 EMGdata.trials.ch1_MEP_time(a,1) = x_new(1);
 EMGdata.trials.ch1_MEP_latency(a,1) = x_new(1) - EMGdata.trials.artloc(a,1);
+EMGdata.trials.ch1_MEP_offset(a,1) = x_new(2) - EMGdata.trials.artloc(a,1);
 
 MEPchannel=EMGdata.trials.ch1{a,1};
-MEPsearchrange = MEPchannel(round(x_new(1) * EMGdata.parameters.sampling_rate):round((x_new(1)+EMGdata.parameters.pre_TMS_reference_window) * EMGdata.parameters.sampling_rate));
+MEPsearchrange = MEPchannel(round(x_new(1) * EMGdata.parameters.sampling_rate):round(x_new(2) * EMGdata.parameters.sampling_rate));
 [max_MEP_value,MEP_max_sample_point] = max(MEPsearchrange);
 [min_MEP_value,MEP_min_sample_point] = min(MEPsearchrange);
 EMGdata.trials.ch1_MEP_amplitude(a,1)=max_MEP_value-min_MEP_value;
+EMGdata.trials.ch1_MEP_area(a,1) = sum(abs(MEPsearchrange));
+EMGdata.trials.ch1_MEP_duration(a,1) = (x_new(2)-x_new(1)) / EMGdata.parameters.sampling_rate;
 
 EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
 handles.EMGdata = EMGdata;
@@ -627,15 +639,19 @@ a = handles.a;
 EMGdata = handles.EMGdata;
 
 % manually select onset point for MEP
-x_new = ginput(1);
+x_new = ginput(2);
 EMGdata.trials.ch2_MEP_time(a,1) = x_new(1);
 EMGdata.trials.ch2_MEP_latency(a,1) = x_new(1) - EMGdata.trials.artloc(a,1);
+EMGdata.trials.ch2_MEP_offset(a,1) = x_new(2) - EMGdata.trials.artloc(a,1);
 
 MEPchannel = EMGdata.trials.ch2{a,1};
-MEPsearchrange = MEPchannel(x_new(1)* EMGdata.parameters.sampling_rate:(x_new(1)+EMGdata.parameters.pre_TMS_reference_window) * EMGdata.parameters.sampling_rate);
+MEPsearchrange = MEPchannel(round(x_new(1) * EMGdata.parameters.sampling_rate):round(x_new(2) * EMGdata.parameters.sampling_rate));
 [max_MEP_value,MEP_max_sample_point] = max(MEPsearchrange);
 [min_MEP_value,MEP_min_sample_point] = min(MEPsearchrange);
 EMGdata.trials.ch2_MEP_amplitude(a,1)=max_MEP_value-min_MEP_value;
+EMGdata.trials.ch2_MEP_area(a,1) = sum(abs(MEPsearchrange));
+EMGdata.trials.ch2_MEP_duration(a,1) = (x_new(2)-x_new(1)) / EMGdata.parameters.sampling_rate;
+
 EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
 handles.EMGdata = EMGdata;
 plot_figure(EMGdata,handles,a)
@@ -650,15 +666,19 @@ a=handles.a;
 EMGdata=handles.EMGdata;
 
 % manually select onset point for MEP
-x_new = ginput(1);
+x_new = ginput(2);
 EMGdata.trials.ch3_MEP_time(a,1) = x_new(1);
 EMGdata.trials.ch3_MEP_latency(a,1) = x_new(1) - EMGdata.trials.artloc(a,1);
+EMGdata.trials.ch3_MEP_offset(a,1) = x_new(2) - EMGdata.trials.artloc(a,1);
 
 MEPchannel=EMGdata.trials.ch3{a,1};
-MEPsearchrange = MEPchannel(x_new(1)* EMGdata.parameters.sampling_rate:(x_new(1)+EMGdata.parameters.pre_TMS_reference_window) * EMGdata.parameters.sampling_rate);
+MEPsearchrange = MEPchannel(round(x_new(1) * EMGdata.parameters.sampling_rate):round(x_new(2) * EMGdata.parameters.sampling_rate));
 [max_MEP_value,MEP_max_sample_point] = max(MEPsearchrange);
 [min_MEP_value,MEP_min_sample_point] = min(MEPsearchrange);
 EMGdata.trials.ch3_MEP_amplitude(a,1)=max_MEP_value-min_MEP_value;
+EMGdata.trials.ch3_MEP_area(a,1) = sum(abs(MEPsearchrange));
+EMGdata.trials.ch3_MEP_duration(a,1) = (x_new(2)-x_new(1)) / EMGdata.parameters.sampling_rate;
+
 EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
 handles.EMGdata = EMGdata;
 plot_figure(EMGdata,handles,a)
@@ -673,15 +693,19 @@ a=handles.a;
 EMGdata=handles.EMGdata;
 
 % manually select onset point for MEP
-x_new = ginput(1);
+x_new = ginput(2);
 EMGdata.trials.ch4_MEP_time(a,1) = x_new(1);
 EMGdata.trials.ch4_MEP_latency(a,1) = x_new(1) - EMGdata.trials.artloc(a,1);
+EMGdata.trials.ch4_MEP_offset(a,1) = x_new(2) - EMGdata.trials.artloc(a,1);
 
 MEPchannel=EMGdata.trials.ch4{a,1};
-MEPsearchrange = MEPchannel(x_new(1)* EMGdata.parameters.sampling_rate:(x_new(1)+EMGdata.parameters.pre_TMS_reference_window) * EMGdata.parameters.sampling_rate);
+MEPsearchrange = MEPchannel(round(x_new(1) * EMGdata.parameters.sampling_rate):round(x_new(2) * EMGdata.parameters.sampling_rate));
 [max_MEP_value,MEP_max_sample_point] = max(MEPsearchrange);
 [min_MEP_value,MEP_min_sample_point] = min(MEPsearchrange);
 EMGdata.trials.ch4_MEP_amplitude(a,1)=max_MEP_value-min_MEP_value;
+EMGdata.trials.ch4_MEP_area(a,1) = sum(abs(MEPsearchrange));
+EMGdata.trials.ch4_MEP_duration(a,1) = (x_new(2)-x_new(1)) / EMGdata.parameters.sampling_rate;
+
 EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
 handles.EMGdata = EMGdata;
 plot_figure(EMGdata,handles,a)

@@ -26,7 +26,7 @@ function findEMG(filename)
 
 %% define data parameters
 parameters.EMG = 0; % Detect EMG bursts: 0 = no, 1 = yes
-parameters.EMG_burst_channels = [0 0];
+parameters.EMG_burst_channels = [0];
 parameters.MEP = 0; % Detect MEPs: 0 = no, 1 = yes
 parameters.artchan_index = 3;
 parameters.MEP_channels = [0];
@@ -150,6 +150,7 @@ if parameters.MEP
     for chan = 1:length(parameters.MEP_channels)
         trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_time'])(:,1) = 0;
         trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_latency'])(:,1) = 0;
+        trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_offset'])(:,1) = 0;
     end
 end
 
@@ -169,7 +170,6 @@ end
 
 %% sweep loop
 for i = 1:height(trials)
-    i
 %% find TMS artefact and MEP
     if parameters.MEP                       
         for chan = 1:length(parameters.MEP_channels)
@@ -182,8 +182,12 @@ for i = 1:height(trials)
                 trials.artloc(i,1) = TMS_artefact_sample_index/parameters.sampling_rate;%artefact location scaled for visualization
                 
                 %define MEP search range
-                lower_limit_MEP_window = TMS_artefact_sample_index + (parameters.min_TMS_to_MEP_latency * parameters.sampling_rate);
+                lower_limit_MEP_window = TMS_artefact_sample_index + (parameters.min_TMS_to_MEP_latency * parameters.sampling_rate);                
                 upper_limit_MEP_window = TMS_artefact_sample_index + (parameters.MEP_window_post_artefact * parameters.sampling_rate);
+                
+                % detect MEP offset point;
+                ipoints = findchangepts(abs(MEPchannel(TMS_artefact_sample_index:upper_limit_MEP_window)));
+                MEP_offset_index = ipoints(1)+TMS_artefact_sample_index;
                 
                 % define lower limit of pre-TMS artefact reference window
                 % for determining threshold for MEP.
@@ -196,22 +200,24 @@ for i = 1:height(trials)
                 trials.preTMS_period_start(i,1) = preTMS_reference_window_lower_limit/parameters.sampling_rate;
                 
                 %redefine range if it extends beyond upper x limit
-                if upper_limit_MEP_window > length(trials.ch1{1,1})
-                    upper_limit_MEP_window=length(trials.ch1{1,1})-1;
+                if MEP_offset_index > length(trials.ch1{1,1})
+                    MEP_offset_index=length(trials.ch1{1,1})-1;
                 end
                 
                 %look only in range after artefact
                 preTMS_MEP_reference_data = MEPchannel(preTMS_reference_window_lower_limit:TMS_artefact_sample_index);
-                MEPsearchrange = MEPchannel(lower_limit_MEP_window:upper_limit_MEP_window);
+                MEPsearchrange = MEPchannel(lower_limit_MEP_window:MEP_offset_index);
                 [max_MEP_value,MEP_max_sample_point] = max(MEPsearchrange);
                 [min_MEP_value,MEP_min_sample_point] = min(MEPsearchrange);
-                MEParea = sum(abs(MEPchannel(lower_limit_MEP_window:upper_limit_MEP_window)));
+                MEParea = sum(abs(MEPchannel(lower_limit_MEP_window:MEP_offset_index)));
                 
                 % identify MEP onset
                 MEP_onset_index = find(abs(MEPsearchrange) > parameters.MEP_onset_std_threshold * std(abs(preTMS_MEP_reference_data)),1); % first value that exceeds std threshold within rectified MEP search range
                 if ~isempty(MEP_onset_index)
                     trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_time'])(i,1) = (MEP_onset_index + lower_limit_MEP_window)/parameters.sampling_rate;
                     trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_latency'])(i,1) = ((MEP_onset_index + lower_limit_MEP_window)/parameters.sampling_rate) - trials.artloc(i,1);
+                    trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_offset'])(i,1) = (MEP_offset_index/parameters.sampling_rate) - trials.artloc(i,1);
+                    trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_duration'])(i,1) = trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_offset'])(i,1) - trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_latency'])(i,1);
                     trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_amplitude'])(i,1) = max_MEP_value - min_MEP_value;
                     trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_area'])(i,1) = MEParea;
                 end

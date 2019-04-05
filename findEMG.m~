@@ -25,11 +25,11 @@ function findEMG(filename)
 %           photodiode event, if used
 
 %% define data parameters
-parameters.EMG = 0; % Detect EMG bursts: 0 = no, 1 = yes
-parameters.EMG_burst_channels = [0 0];
-parameters.MEP = 0; % Detect MEPs: 0 = no, 1 = yes
+parameters.EMG = 1; % Detect EMG bursts: 0 = no, 1 = yes
+parameters.EMG_burst_channels = [1 2];
+parameters.MEP = 1; % Detect MEPs: 0 = no, 1 = yes
 parameters.artchan_index = 3;
-parameters.MEP_channels = [0];
+parameters.MEP_channels = [1];
 parameters.CSP = 1; % Detect CSP: 0 = no, 1 = yes
 parameters.CSP_channels = [1];
 
@@ -150,6 +150,7 @@ if parameters.MEP
     for chan = 1:length(parameters.MEP_channels)
         trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_time'])(:,1) = 0;
         trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_latency'])(:,1) = 0;
+        trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_offset'])(:,1) = 0;
     end
 end
 
@@ -169,7 +170,6 @@ end
 
 %% sweep loop
 for i = 1:height(trials)
-    i
 %% find TMS artefact and MEP
     if parameters.MEP                       
         for chan = 1:length(parameters.MEP_channels)
@@ -182,8 +182,12 @@ for i = 1:height(trials)
                 trials.artloc(i,1) = TMS_artefact_sample_index/parameters.sampling_rate;%artefact location scaled for visualization
                 
                 %define MEP search range
-                lower_limit_MEP_window = TMS_artefact_sample_index + (parameters.min_TMS_to_MEP_latency * parameters.sampling_rate);
+                lower_limit_MEP_window = TMS_artefact_sample_index + (parameters.min_TMS_to_MEP_latency * parameters.sampling_rate);                
                 upper_limit_MEP_window = TMS_artefact_sample_index + (parameters.MEP_window_post_artefact * parameters.sampling_rate);
+                
+                % detect MEP offset point;
+                ipoints = findchangepts(abs(MEPchannel(TMS_artefact_sample_index:upper_limit_MEP_window)));
+                MEP_offset_index = ipoints(1)+TMS_artefact_sample_index;
                 
                 % define lower limit of pre-TMS artefact reference window
                 % for determining threshold for MEP.
@@ -321,12 +325,16 @@ for i = 1:height(trials)
             if trials.artloc(i,1)
                 csp_signal = trials.(['ch', num2str(parameters.CSP_channels(chan))]){i,1};
                 [IUPPER, ILOWER, UPPERSUM] = cusum(abs(csp_signal));
-                [peak1, csp_start_loc] = findpeaks(UPPERSUM, 'MinPeakWidth',.05*parameters.sampling_rate);
-                [peak2, csp_end_loc] = findpeaks(-1*UPPERSUM, 'MinPeakWidth',.05*parameters.sampling_rate);
+                [peak1, csp_start_loc] = findpeaks(UPPERSUM, 'MinPeakProminence', 9, 'NPeaks', 1);
+                if csp_start_loc
+                    [peak2, csp_end_loc] = findpeaks(-1*UPPERSUM(csp_start_loc:end), csp_start_loc:length(UPPERSUM), 'MinPeakProminence', 5, 'NPeaks', 1);
+                end
 %                     TF = ischange(csp_signal,'variance','MaxNumChanges',2);                
 %                     CSP_interval = find(TF);
-                trials.(['ch', num2str(parameters.CSP_channels(chan)) '_CSP_onset'])(i,1) = csp_start_loc;
-                trials.(['ch', num2str(parameters.CSP_channels(chan)) '_CSP_offset'])(i,1) = csp_end_loc;
+                if csp_start_loc & csp_end_loc,
+                    trials.(['ch', num2str(parameters.CSP_channels(chan)) '_CSP_onset'])(i,1) = csp_start_loc/parameters.sampling_rate;
+                    trials.(['ch', num2str(parameters.CSP_channels(chan)) '_CSP_offset'])(i,1) = csp_end_loc/parameters.sampling_rate;
+                end
             else
                 artchannel = trials.(['ch', num2str(parameters.artchan_index)]){i,1};                            
                 [min_artefact_value, TMS_artefact_sample_index] = min(artchannel);
@@ -335,12 +343,16 @@ for i = 1:height(trials)
                     trials.artloc(i,1) = TMS_artefact_sample_index/parameters.sampling_rate;%artefact location scaled for visualization
                     csp_signal = trials.(['ch', num2str(parameters.CSP_channels(chan))]){i,1};
                     [IUPPER, ILOWER, UPPERSUM] = cusum(abs(csp_signal));
-                    [peak1, csp_start_loc] = findpeaks(UPPERSUM, 'MinPeakWidth',.05*parameters.sampling_rate);
-                    [peak2, csp_end_loc] = findpeaks(-1*UPPERSUM, 'MinPeakWidth',.05*parameters.sampling_rate);
+                    [peak1, csp_start_loc] = findpeaks(UPPERSUM,'MinPeakProminence', 9, 'NPeaks', 1);
+                    if csp_start_loc
+                        [peak2, csp_end_loc] = findpeaks(-1*UPPERSUM(csp_start_loc:end), csp_start_loc:length(UPPERSUM), 'MinPeakProminence', 5, 'NPeaks', 1);
+                    end
 %                     TF = ischange(csp_signal,'variance','MaxNumChanges',2);                
 %                     CSP_interval = find(TF);
-                    trials.(['ch', num2str(parameters.CSP_channels(chan)) '_CSP_onset'])(i,1) = csp_start_loc;
-                    trials.(['ch', num2str(parameters.CSP_channels(chan)) '_CSP_offset'])(i,1) = csp_end_loc;
+                    if csp_start_loc & csp_end_loc,
+                        trials.(['ch', num2str(parameters.CSP_channels(chan)) '_CSP_onset'])(i,1) = csp_start_loc/parameters.sampling_rate;
+                        trials.(['ch', num2str(parameters.CSP_channels(chan)) '_CSP_offset'])(i,1) = csp_end_loc/parameters.sampling_rate;
+                    end
                 end
             end
             
