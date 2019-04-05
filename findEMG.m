@@ -25,14 +25,16 @@ function findEMG(filename)
 %           photodiode event, if used
 
 %% define data parameters
-parameters.EMG = 0; % Detect EMG bursts: 0 = no, 1 = yes
-parameters.EMG_burst_channels = [0];
-parameters.MEP = 0; % Detect MEPs: 0 = no, 1 = yes
-parameters.artchan_index = 3;
-parameters.MEP_channels = [0];
-parameters.CSP = 1; % Detect CSP: 0 = no, 1 = yes
-parameters.CSP_channels = [1];
-
+use_command_line = 1;
+if ~use_command_line
+    parameters.EMG = 1; % Detect EMG bursts: 0 = no, 1 = yes
+    parameters.EMG_burst_channels = [1 2];
+    parameters.MEP = 1; % Detect MEPs: 0 = no, 1 = yes
+    parameters.artchan_index = 3;
+    parameters.MEP_channels = [1];
+    parameters.CSP = 0; % Detect CSP: 0 = no, 1 = yes
+    parameters.CSP_channels = [0];
+end
 %% define analysis parameters (edit these)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 parameters.sampling_rate = 5000; % samples per second (Hz)
@@ -69,36 +71,31 @@ chs = ["ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8"];
 parameters.num_channels = sum(contains(trials.Properties.VariableNames,chs));
 
 %% Toggles EMG and TMS functionality
-if ~isfield(parameters,'EMG')
+if use_command_line
     parameters.EMG = input('Do you want to find electromyographic (EMG) bursts? yes(1) or no(0):');
-end
 
-if parameters.EMG & ~isfield(parameters,'EMG_burst_channels')
-    parameters.EMG_burst_channels = input('Enter the channels to be analyzed for EMG bursts (e.g. [2] or [1 3 5]): ');
-end
-
-if ~isfield(parameters,'MEP')
-    parameters.MEP = input('Do you want to detect motor evoked potentials (MEPs)? yes(1) or no(0):');
-end
-
-if ~isfield(parameters,'CSP')
-    parameters.CSP = input('Do you want to detect cortical silent period (CSP) epochs? yes(1) or no(0):');
-end
-
-if parameters.MEP | parameters.CSP
-    trials.artloc(:,1) = 0;
-    trials.preTMS_period_start(:,1) = 0;
-    if ~isfield(parameters,'artchan_index')
-        parameters.artchan_index = input('Enter TMS artefact channel #:');
+    if parameters.EMG & ~parameters.EMG_burst_channels
+        parameters.EMG_burst_channels = input('Enter the channels to be analyzed for EMG bursts (e.g. [2] or [1 3 5]): ');
     end
-end
+    
+    parameters.MEP = input('Do you want to detect motor evoked potentials (MEPs)? yes(1) or no(0):');
+    parameters.CSP = input('Do you want to detect cortical silent period (CSP) epochs? yes(1) or no(0):');
+    
+    if parameters.MEP | parameters.CSP
+        trials.artloc(:,1) = 0;
+        trials.preTMS_period_start(:,1) = 0;
+        if ~parameters.artchan_index
+            parameters.artchan_index = input('Enter TMS artefact channel #:');
+        end
+    end
 
-if parameters.MEP & ~isfield(parameters,'MEP_channels')
-    parameters.MEP_channels = input('Enter MEP channels (e.g. [2] or [1 3 5]):');
-end
+    if parameters.MEP & ~parameters.MEP_channels
+        parameters.MEP_channels = input('Enter MEP channels (e.g. [2] or [1 3 5]):');
+    end
 
-if parameters.CSP & ~isfield(parameters,'CSP_channels')
-    parameters.CSP_channels = input('Enter CSP channels (e.g. [2] or [1 3 5]):');
+    if parameters.CSP & ~parameters.CSP_channels
+        parameters.CSP_channels = input('Enter CSP channels (e.g. [2] or [1 3 5]):');
+    end
 end
 
 %% find photodiode event
