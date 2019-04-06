@@ -25,7 +25,7 @@ function findEMG(filename)
 %           photodiode event, if used
 
 %% define data parameters
-use_command_line = 0;
+use_command_line = 1;
 if ~use_command_line
     parameters.EMG = 1; % Detect EMG bursts: 0 = no, 1 = yes
     parameters.EMG_burst_channels = [1 2];
@@ -143,6 +143,10 @@ if parameters.EMG
     end
 end
 
+if parameters.artchan_index
+    trials.artloc(:,1) = 0;
+end
+
 if parameters.MEP
     for chan = 1:length(parameters.MEP_channels)
         trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_time'])(:,1) = 0;
@@ -158,9 +162,7 @@ if parameters.CSP
     end
 end
 
-if parameters.artchan_index
-    trials.artloc(:,1) = 0;
-end
+
 
 %% identify MEP and non-MEP channels
 if parameters.MEP & parameters.EMG
@@ -326,16 +328,18 @@ for i = 1:height(trials)
     if parameters.CSP
         for chan = 1:length(parameters.CSP_channels)
             if trials.artloc(i,1)
-                csp_signal = trials.(['ch', num2str(parameters.CSP_channels(chan))]){i,1};
+                csp_signal = trials.(['ch', num2str(parameters.CSP_channels(chan))]){i,1};                
                 [IUPPER, ILOWER, UPPERSUM] = cusum(abs(csp_signal));
                 [peak1, csp_start_loc] = findpeaks(UPPERSUM, 'MinPeakProminence', 9, 'NPeaks', 1);
                 if csp_start_loc
                     [peak2, csp_end_loc] = findpeaks(-1*UPPERSUM(csp_start_loc:end), csp_start_loc:length(UPPERSUM), 'MinPeakProminence', 5, 'NPeaks', 1);
                 end
-%                     TF = ischange(csp_signal,'variance','MaxNumChanges',2);                
-%                     CSP_interval = find(TF);
-                if csp_start_loc & csp_end_loc,
+                if sum(ismember(parameters.CSP_channels, parameters.MEP_channels))
+                    trials.(['ch', num2str(parameters.CSP_channels(chan)) '_CSP_onset'])(i,1) = trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_time'])(i,1) + trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_offset'])(i,1);
+                elseif csp_start_loc 
                     trials.(['ch', num2str(parameters.CSP_channels(chan)) '_CSP_onset'])(i,1) = csp_start_loc/parameters.sampling_rate;
+                end
+                if csp_end_loc
                     trials.(['ch', num2str(parameters.CSP_channels(chan)) '_CSP_offset'])(i,1) = csp_end_loc/parameters.sampling_rate;
                 end
             else
@@ -350,9 +354,8 @@ for i = 1:height(trials)
                     if csp_start_loc
                         [peak2, csp_end_loc] = findpeaks(-1*UPPERSUM(csp_start_loc:end), csp_start_loc:length(UPPERSUM), 'MinPeakProminence', 5, 'NPeaks', 1);
                     end
-%                     TF = ischange(csp_signal,'variance','MaxNumChanges',2);                
-%                     CSP_interval = find(TF);
-                    if csp_start_loc & csp_end_loc,
+
+                    if csp_start_loc & csp_end_loc
                         trials.(['ch', num2str(parameters.CSP_channels(chan)) '_CSP_onset'])(i,1) = csp_start_loc/parameters.sampling_rate;
                         trials.(['ch', num2str(parameters.CSP_channels(chan)) '_CSP_offset'])(i,1) = csp_end_loc/parameters.sampling_rate;
                     end
