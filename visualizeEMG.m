@@ -216,8 +216,10 @@ for n=1:subplot_number
     end
 
     %add TMS artefact
-    if (EMGdata.parameters.CSP | EMGdata.parameters.MEP)  & EMGdata.trials.artloc(a,1) && EMGdata.parameters.artchan_index==n
-        line([EMGdata.trials.artloc(a,1) EMGdata.trials.artloc(a,1)], ylims(n, :) ,'Color',TMS_color,'Marker','o')
+    if (EMGdata.parameters.CSP | EMGdata.parameters.MEP) && EMGdata.parameters.artchan_index==n
+        if EMGdata.trials.artloc(a,1)
+            line([EMGdata.trials.artloc(a,1) EMGdata.trials.artloc(a,1)], ylims(n, :) ,'Color',TMS_color,'Marker','o')
+        end
     end        
     
     %add EMG burst patch

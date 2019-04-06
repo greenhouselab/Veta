@@ -1,5 +1,5 @@
 function findEMG(filename)
-% 4/2/19 Nick Jackson (njackson@uoregon.edu) & Ian Greenhouse (img@uoregon.edu)
+% 4/5/19 Nick Jackson (njackson@uoregon.edu) & Ian Greenhouse (img@uoregon.edu)
 % This function finds EMG/MEP events. When script is run, user is prompted to
 % open file that was output by EMGrecord.
 % output:
@@ -25,7 +25,7 @@ function findEMG(filename)
 %           photodiode event, if used
 
 %% define data parameters
-use_command_line = 1;
+use_command_line = 0;
 if ~use_command_line
     parameters.EMG = 1; % Detect EMG bursts: 0 = no, 1 = yes
     parameters.EMG_burst_channels = [1 2];
@@ -135,7 +135,7 @@ function trials = findEvents(trials,parameters) % parameterize these
 %     trials:table
 %     updated with new information
 
-%% initialize burst columns
+%% initialize trials columns
 if parameters.EMG
     for chan = 1:length(parameters.EMG_burst_channels)
         trials.(['ch', num2str(parameters.EMG_burst_channels(chan)), '_EMGburst_onset'])(:,1) = 0;
@@ -156,6 +156,10 @@ if parameters.CSP
         trials.(['ch', num2str(parameters.CSP_channels(chan)), '_CSP_onset'])(:,1) = 0;
         trials.(['ch', num2str(parameters.CSP_channels(chan)), '_CSP_offset'])(:,1) = 0;
     end
+end
+
+if parameters.artchan_index
+    trials.artloc(:,1) = 0;
 end
 
 %% identify MEP and non-MEP channels
