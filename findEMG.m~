@@ -1,5 +1,5 @@
 function findEMG(filename)
-% 4/2/19 Nick Jackson (njackson@uoregon.edu) & Ian Greenhouse (img@uoregon.edu)
+% 4/5/19 Nick Jackson (njackson@uoregon.edu) & Ian Greenhouse (img@uoregon.edu)
 % This function finds EMG/MEP events. When script is run, user is prompted to
 % open file that was output by EMGrecord.
 % output:
@@ -25,21 +25,23 @@ function findEMG(filename)
 %           photodiode event, if used
 
 %% define data parameters
-parameters.EMG = []; % Detect EMG bursts: 0 = no, 1 = yes
-parameters.EMG_burst_channels = [];
-parameters.MEP = []; % Detect MEPs: 0 = no, 1 = yes
-parameters.artchan_index = 0;
-parameters.MEP_channels = [0];
-parameters.CSP = 0; % Detect CSP: 0 = no, 1 = yes
-parameters.CSP_channels = [0];
-
+use_command_line = 1;
+if ~use_command_line
+    parameters.EMG = 1; % Detect EMG bursts: 0 = no, 1 = yes
+    parameters.EMG_burst_channels = [1 2];
+    parameters.MEP = 1; % Detect MEPs: 0 = no, 1 = yes
+    parameters.artchan_index = 3;
+    parameters.MEP_channels = [1];
+    parameters.CSP = 0; % Detect CSP: 0 = no, 1 = yes
+    parameters.CSP_channels = [0];
+end
 %% define analysis parameters (edit these)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-parameters.sampling_rate = 5000; % samples per second (Hz)
+parameters.sampling_rate = 2000; % samples per second (Hz)
 parameters.emg_burst_threshold = .3; % raw threshold in V to consider for EMG
 parameters.emg_onset_std_threshold = 2; % number of std to consider for EMG burst onsets/offsets
 parameters.tms_artefact_threshold = .04; % raw threshold magnitude in V to consider for TMS artefact
-parameters.MEP_window_post_artefact = .1; % time in s after TMS to measure MEP in seconds
+parameters.MEP_window_post_artefact = .12; % time in s after TMS to measure MEP in seconds
 parameters.pre_TMS_reference_window = .1;  % time before TMS to serve as reference baseline for MEP onset
 parameters.MEP_onset_std_threshold = 3; % number of std to consider for MEP onsets
 parameters.min_TMS_to_MEP_latency = .018; % number of secs after TMS to begin MEP onset detection
@@ -69,36 +71,31 @@ chs = ["ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8"];
 parameters.num_channels = sum(contains(trials.Properties.VariableNames,chs));
 
 %% Toggles EMG and TMS functionality
-if ~isfield(parameters,'EMG')
+if use_command_line
     parameters.EMG = input('Do you want to find electromyographic (EMG) bursts? yes(1) or no(0):');
-end
 
-if parameters.EMG & ~isfield(parameters,'EMG_burst_channels')
-    parameters.EMG_burst_channels = input('Enter the channels to be analyzed for EMG bursts (e.g. [2] or [1 3 5]): ');
-end
-
-if ~isfield(parameters,'MEP')
-    parameters.MEP = input('Do you want to detect motor evoked potentials (MEPs)? yes(1) or no(0):');
-end
-
-if ~isfield(parameters,'CSP')
-    parameters.CSP = input('Do you want to detect cortical silent period (CSP) epochs? yes(1) or no(0):');
-end
-
-if parameters.MEP | parameters.CSP
-    trials.artloc(:,1) = 0;
-    trials.preTMS_period_start(:,1) = 0;
-    if ~isfield(parameters,'artchan_index')
-        parameters.artchan_index = input('Enter TMS artefact channel #:');
+    if parameters.EMG & ~isfield(parameters, 'EMG_burst_channels')
+        parameters.EMG_burst_channels = input('Enter the channels to be analyzed for EMG bursts (e.g. [2] or [1 3 5]): ');
     end
-end
+    
+    parameters.MEP = input('Do you want to detect motor evoked potentials (MEPs)? yes(1) or no(0):');
+    parameters.CSP = input('Do you want to detect cortical silent period (CSP) epochs? yes(1) or no(0):');
+    
+    if parameters.MEP | parameters.CSP
+        trials.artloc(:,1) = 0;
+        trials.preTMS_period_start(:,1) = 0;
+        if ~isfield(parameters,'artchan_index')
+            parameters.artchan_index = input('Enter TMS artefact channel #:');
+        end
+    end
 
-if parameters.MEP & ~isfield(parameters,'MEP_channels')
-    parameters.MEP_channels = input('Enter MEP channels (e.g. [2] or [1 3 5]):');
-end
+    if parameters.MEP & ~isfield(parameters, 'MEP_channels')
+        parameters.MEP_channels = input('Enter MEP channels (e.g. [2] or [1 3 5]):');
+    end
 
-if parameters.CSP & ~isfield(parameters,'CSP_channels')
-    parameters.CSP_channels = input('Enter CSP channels (e.g. [2] or [1 3 5]):');
+    if parameters.CSP & ~isfield(parameters,'CSP_channels')
+        parameters.CSP_channels = input('Enter CSP channels (e.g. [2] or [1 3 5]):');
+    end
 end
 
 %% find photodiode event
@@ -138,12 +135,16 @@ function trials = findEvents(trials,parameters) % parameterize these
 %     trials:table
 %     updated with new information
 
-%% initialize burst columns
+%% initialize trials columns
 if parameters.EMG
     for chan = 1:length(parameters.EMG_burst_channels)
         trials.(['ch', num2str(parameters.EMG_burst_channels(chan)), '_EMGburst_onset'])(:,1) = 0;
         trials.(['ch', num2str(parameters.EMG_burst_channels(chan)), '_EMGburst_offset'])(:,1) = 0;
     end
+end
+
+if parameters.artchan_index
+    trials.artloc(:,1) = 0;
 end
 
 if parameters.MEP
@@ -160,6 +161,8 @@ if parameters.CSP
         trials.(['ch', num2str(parameters.CSP_channels(chan)), '_CSP_offset'])(:,1) = 0;
     end
 end
+
+
 
 %% identify MEP and non-MEP channels
 if parameters.MEP & parameters.EMG
@@ -179,15 +182,19 @@ for i = 1:height(trials)
             [min_artefact_value, TMS_artefact_sample_index] = min(artchannel);
             
             if min_artefact_value < -1 * abs(parameters.tms_artefact_threshold) % TMS artefact must exceed a threshold to be classified as an artefact
-                trials.artloc(i,1) = TMS_artefact_sample_index/parameters.sampling_rate;%artefact location scaled for visualization
+                trials.artloc(i,1) = TMS_artefact_sample_index/parameters.sampling_rate; %artefact location scaled for visualization
                 
                 %define MEP search range
                 lower_limit_MEP_window = TMS_artefact_sample_index + (parameters.min_TMS_to_MEP_latency * parameters.sampling_rate);                
                 upper_limit_MEP_window = TMS_artefact_sample_index + (parameters.MEP_window_post_artefact * parameters.sampling_rate);
                 
                 % detect MEP offset point;
-                ipoints = findchangepts(abs(MEPchannel(TMS_artefact_sample_index:upper_limit_MEP_window)));
-                MEP_offset_index = ipoints(1)+TMS_artefact_sample_index;
+%                 ipoints = findchangepts(abs(MEPchannel(TMS_artefact_sample_index:upper_limit_MEP_window)));
+%                 MEP_offset_index = ipoints(1)+TMS_artefact_sample_index;
+                
+                ipoints = findchangepts(abs(MEPchannel(TMS_artefact_sample_index:upper_limit_MEP_window)), 'MaxNumChanges', 6);
+                MEP_onset_index = ipoints(1)+TMS_artefact_sample_index;
+                MEP_offset_index = ipoints(end)+TMS_artefact_sample_index;
                 
                 % define lower limit of pre-TMS artefact reference window
                 % for determining threshold for MEP.
@@ -209,13 +216,13 @@ for i = 1:height(trials)
                 MEPsearchrange = MEPchannel(lower_limit_MEP_window:MEP_offset_index);
                 [max_MEP_value,MEP_max_sample_point] = max(MEPsearchrange);
                 [min_MEP_value,MEP_min_sample_point] = min(MEPsearchrange);
-                MEParea = sum(abs(MEPchannel(lower_limit_MEP_window:MEP_offset_index)));
+                MEParea = sum(abs(MEPchannel(MEP_onset_index:MEP_offset_index)));
                 
                 % identify MEP onset
-                MEP_onset_index = find(abs(MEPsearchrange) > parameters.MEP_onset_std_threshold * std(abs(preTMS_MEP_reference_data)),1); % first value that exceeds std threshold within rectified MEP search range
+%                 MEP_onset_index = find(abs(MEPsearchrange) > parameters.MEP_onset_std_threshold * std(abs(preTMS_MEP_reference_data)),1); % first value that exceeds std threshold within rectified MEP search range
                 if ~isempty(MEP_onset_index)
-                    trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_time'])(i,1) = (MEP_onset_index + lower_limit_MEP_window)/parameters.sampling_rate;
-                    trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_latency'])(i,1) = ((MEP_onset_index + lower_limit_MEP_window)/parameters.sampling_rate) - trials.artloc(i,1);
+                    trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_time'])(i,1) = MEP_onset_index/parameters.sampling_rate;
+                    trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_latency'])(i,1) = (MEP_onset_index/parameters.sampling_rate) - trials.artloc(i,1);
                     trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_offset'])(i,1) = (MEP_offset_index/parameters.sampling_rate) - trials.artloc(i,1);
                     trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_duration'])(i,1) = trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_offset'])(i,1) - trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_latency'])(i,1);
                     trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_amplitude'])(i,1) = max_MEP_value - min_MEP_value;
@@ -325,16 +332,18 @@ for i = 1:height(trials)
     if parameters.CSP
         for chan = 1:length(parameters.CSP_channels)
             if trials.artloc(i,1)
-                csp_signal = trials.(['ch', num2str(parameters.CSP_channels(chan))]){i,1};
+                csp_signal = trials.(['ch', num2str(parameters.CSP_channels(chan))]){i,1};                
                 [IUPPER, ILOWER, UPPERSUM] = cusum(abs(csp_signal));
                 [peak1, csp_start_loc] = findpeaks(UPPERSUM, 'MinPeakProminence', 9, 'NPeaks', 1);
                 if csp_start_loc
                     [peak2, csp_end_loc] = findpeaks(-1*UPPERSUM(csp_start_loc:end), csp_start_loc:length(UPPERSUM), 'MinPeakProminence', 5, 'NPeaks', 1);
                 end
-%                     TF = ischange(csp_signal,'variance','MaxNumChanges',2);                
-%                     CSP_interval = find(TF);
-                if csp_start_loc & csp_end_loc,
+                if sum(ismember(parameters.CSP_channels, parameters.MEP_channels))
+                    trials.(['ch', num2str(parameters.CSP_channels(chan)) '_CSP_onset'])(i,1) = trials.artloc(i,1) + trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_offset'])(i,1);
+                elseif csp_start_loc 
                     trials.(['ch', num2str(parameters.CSP_channels(chan)) '_CSP_onset'])(i,1) = csp_start_loc/parameters.sampling_rate;
+                end
+                if csp_end_loc
                     trials.(['ch', num2str(parameters.CSP_channels(chan)) '_CSP_offset'])(i,1) = csp_end_loc/parameters.sampling_rate;
                 end
             else
@@ -349,9 +358,8 @@ for i = 1:height(trials)
                     if csp_start_loc
                         [peak2, csp_end_loc] = findpeaks(-1*UPPERSUM(csp_start_loc:end), csp_start_loc:length(UPPERSUM), 'MinPeakProminence', 5, 'NPeaks', 1);
                     end
-%                     TF = ischange(csp_signal,'variance','MaxNumChanges',2);                
-%                     CSP_interval = find(TF);
-                    if csp_start_loc & csp_end_loc,
+
+                    if csp_start_loc & csp_end_loc
                         trials.(['ch', num2str(parameters.CSP_channels(chan)) '_CSP_onset'])(i,1) = csp_start_loc/parameters.sampling_rate;
                         trials.(['ch', num2str(parameters.CSP_channels(chan)) '_CSP_offset'])(i,1) = csp_end_loc/parameters.sampling_rate;
                     end
