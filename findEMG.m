@@ -162,8 +162,6 @@ if parameters.CSP
     end
 end
 
-
-
 %% identify MEP and non-MEP channels
 if parameters.MEP & parameters.EMG
     non_MEP_channels = parameters.EMG_burst_channels(parameters.EMG_burst_channels ~= parameters.MEP_channels); % do not want to detect MEPs as EMG bursts, so ignore MEP channel
@@ -188,12 +186,8 @@ for i = 1:height(trials)
                 lower_limit_MEP_window = TMS_artefact_sample_index + (parameters.min_TMS_to_MEP_latency * parameters.sampling_rate);                
                 upper_limit_MEP_window = TMS_artefact_sample_index + (parameters.MEP_window_post_artefact * parameters.sampling_rate);
                 
-                % detect MEP offset point;
-%                 ipoints = findchangepts(abs(MEPchannel(TMS_artefact_sample_index:upper_limit_MEP_window)));
-%                 MEP_offset_index = ipoints(1)+TMS_artefact_sample_index;
-
                 % detect MEP onset and offset point;
-                ipoints = findchangepts(abs(MEPchannel(lower_limit_MEP_window:upper_limit_MEP_window)), 'MaxNumChanges', 10);
+                ipoints = findchangepts(abs(MEPchannel(lower_limit_MEP_window:upper_limit_MEP_window)), 'MaxNumChanges', 10, 'Statistic', 'mean'); % fewer change points may suffice
                 MEP_onset_index = ipoints(1)+lower_limit_MEP_window;
                 MEP_offset_index = ipoints(end)+lower_limit_MEP_window;
                 
@@ -220,7 +214,7 @@ for i = 1:height(trials)
                 MEParea = sum(abs(MEPchannel(MEP_onset_index:MEP_offset_index)));
                 
                 % identify MEP onset
-%                 MEP_onset_index = find(abs(MEPsearchrange) > parameters.MEP_onset_std_threshold * std(abs(preTMS_MEP_reference_data)),1); % first value that exceeds std threshold within rectified MEP search range
+                % MEP_onset_index = find(abs(MEPsearchrange) > parameters.MEP_onset_std_threshold * std(abs(preTMS_MEP_reference_data)),1); % first value that exceeds std threshold within rectified MEP search range
                 if ~isempty(MEP_onset_index)
                     trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_time'])(i,1) = MEP_onset_index/parameters.sampling_rate;
                     trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_latency'])(i,1) = (MEP_onset_index/parameters.sampling_rate) - trials.artloc(i,1);

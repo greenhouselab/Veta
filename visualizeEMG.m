@@ -783,9 +783,14 @@ a=handles.a;
 EMGdata=handles.EMGdata;
 %manually select onset and offset point for bursts
 x_new=ginput(2);
+
+EMGchannel=EMGdata.trials.ch1{a,1};
+EMGrange = EMGchannel(round(x_new(1) * EMGdata.parameters.sampling_rate):round(x_new(2) * EMGdata.parameters.sampling_rate));
+
 EMGdata.trials.ch1_EMGburst_onset(a,1)=x_new(1,1);
 EMGdata.trials.ch1_EMGburst_offset(a,1)=x_new(2,1);
 EMGdata.trials.ch1_EMG_RT(a,1) = EMGdata.trials.ch1_EMGburst_onset(a,1) - EMGdata.trials.stim_onset(a,1);
+EMGdata.trials.ch1_EMGburst_area(a,1) = sum(abs(EMGrange));
 EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
 handles.EMGdata = EMGdata;
 plot_figure(EMGdata,handles,a)
@@ -800,9 +805,14 @@ a=handles.a;
 EMGdata=handles.EMGdata;
 %manually select onset and offset point for bursts
 x_new=ginput(2);
+
+EMGchannel=EMGdata.trials.ch2{a,1};
+EMGrange = EMGchannel(round(x_new(1) * EMGdata.parameters.sampling_rate):round(x_new(2) * EMGdata.parameters.sampling_rate));
+
 EMGdata.trials.ch2_EMGburst_onset(a,1)=x_new(1,1);
 EMGdata.trials.ch2_EMGburst_offset(a,1)=x_new(2,1);
 EMGdata.trials.ch2_EMG_RT(a,1) = EMGdata.trials.ch2_EMGburst_onset(a,1) - EMGdata.trials.stim_onset(a,1);
+EMGdata.trials.ch2_EMGburst_area(a,1) = sum(abs(EMGrange));
 EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
 handles.EMGdata = EMGdata;
 plot_figure(EMGdata,handles,a)
@@ -817,9 +827,14 @@ a=handles.a;
 EMGdata=handles.EMGdata;
 %manually select onset and offset point for bursts
 x_new=ginput(2);
+
+EMGchannel=EMGdata.trials.ch3{a,1};
+EMGrange = EMGchannel(round(x_new(1) * EMGdata.parameters.sampling_rate):round(x_new(2) * EMGdata.parameters.sampling_rate));
+
 EMGdata.trials.ch3_EMGburst_onset(a,1)=x_new(1,1);
 EMGdata.trials.ch3_EMGburst_offset(a,1)=x_new(2,1);
 EMGdata.trials.ch3_EMG_RT(a,1) = EMGdata.trials.ch3_EMGburst_onset(a,1) - EMGdata.trials.stim_onset(a,1);
+EMGdata.trials.ch2_EMGburst_area(a,1) = sum(abs(EMGrange));
 EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
 handles.EMGdata = EMGdata;
 plot_figure(EMGdata,handles,a)
@@ -834,9 +849,14 @@ a=handles.a;
 EMGdata=handles.EMGdata;
 %manually select onset and offset point for bursts
 x_new=ginput(2);
+
+EMGchannel=EMGdata.trials.ch4{a,1};
+EMGrange = EMGchannel(round(x_new(1) * EMGdata.parameters.sampling_rate):round(x_new(2) * EMGdata.parameters.sampling_rate));
+
 EMGdata.trials.ch4_EMGburst_onset(a,1)=x_new(1,1);
 EMGdata.trials.ch4_EMGburst_offset(a,1)=x_new(2,1);
 EMGdata.trials.ch4_EMG_RT(a,1) = EMGdata.trials.ch4_EMGburst_onset(a,1) - EMGdata.trials.stim_onset(a,1);
+EMGdata.trials.ch2_EMGburst_area(a,1) = sum(abs(EMGrange));
 EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
 handles.EMGdata = EMGdata;
 plot_figure(EMGdata,handles,a)
