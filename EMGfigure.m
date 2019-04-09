@@ -1,4 +1,4 @@
-function EMGfigure(num_channels,EMG_plot_Ylims,MEP_refline,diode,f1,setup,xlims)
+function EMGfigure(num_channels,EMG_plot_Ylims,MEP_refline,diode,f1,setup,xlims, trial)
 % March 23, 2019 Nick Jackson (njackson@uoregon.edu) & Ian Greenhouse
 % (igreenhouse@uoregon.edu)
 % This function plots data across multiple channels. It is called by the
@@ -19,13 +19,17 @@ for i = 1:num_channels
 %     xlabel('Seconds');
 %     end
     ylabel('mV');
-    ylim(EMG_plot_Ylims);
+    ylim(EMG_plot_Ylims(i,:));
     xlim(xlims);%recently changed
     peakline = refline([0 MEP_refline]);
     troughline = refline([0 -MEP_refline]);
     peakline.Color = 'r';
     troughline.Color = 'r';
     hold on
+    if i==1
+        title_text = ['Sweep: ' num2str(trial)];
+        title(title_text);
+    end
 end
 
 if diode
@@ -40,4 +44,6 @@ if diode
     troughline.Color = 'r';
     hold on
 end
+
+
 end

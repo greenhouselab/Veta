@@ -16,7 +16,7 @@ delete(instrfindall);
 %% plot parameters
 sweepnumber = 1;%number of sweeps
 MEP_refline = .025; % target MEP amplitude in mV
-EMG_plot_Ylims = [-.2 .2]; % in mV
+EMG_plot_Ylims = [-.2 .2; -.2 .2; -.2 .2; -.2 .2; -.2 .2; -.2 .2; -.2 .2; -.2 .2]; % in mV
 sweep_duration=0.5;% in seconds
 xlims=[0 sweep_duration];
 
@@ -26,7 +26,7 @@ end
 %% setup figure
 f1 = figure(1); %creates a figure window
 % set(f1,'Position',[10 10 1600 900]);
-EMGfigure(num_channels,EMG_plot_Ylims,MEP_refline,diode,f1,1,xlims)%calls EMGfigure function
+EMGfigure(num_channels,EMG_plot_Ylims,MEP_refline,diode,f1,1,xlims, 1)%calls EMGfigure function
 %% pre-allocate trials table
 trials = table();
 %% Sweep Loop

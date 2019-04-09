@@ -26,6 +26,7 @@ function findEMG(filename)
 
 %% define data parameters
 use_command_line = 1;
+use_ui_save = 1;
 if ~use_command_line
     parameters.EMG = 1; % Detect EMG bursts: 0 = no, 1 = yes
     parameters.EMG_burst_channels = [1 2];
@@ -108,7 +109,11 @@ trials = findEvents(trials,parameters);
 
 %% save file
 outfile=[File(1:end-4),'_preprocessed'];
-uisave({'trials','subject','parameters'},outfile);
+if use_ui_save == 1
+    uisave({'trials','subject','parameters'},outfile);
+else
+    save(outfile, 'trials', 'subject', 'parameters');
+end
 end
 
 %% HELPER FUNCTIONS
