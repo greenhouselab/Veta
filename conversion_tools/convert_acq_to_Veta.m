@@ -1,6 +1,6 @@
-function convert_acq_to_EMGvis()
+function convert_acq_to_Veta()
 
-% [filename, pathname] = uigetfile('*.acq', 'Pick a acq data file');
+% This function will convert .acq files into .mat Veta files.
 
 EMG_channels = input('Enter the numbers of channels containing EMG in this experiment (e.g. [2] or [1 3 5]: ');
 
@@ -21,6 +21,6 @@ for i = 1:length(files)
 
 end
 subject = struct();
-outfile=[files(1).name(1:end-9),'_acq_to_EMGvis', date];
-uisave({'trials', 'files'},outfile);
+outfile=[files(1).name(1:end-9),'_acq_to_Veta', date];
+uisave({'trials', 'files', 'subject'},outfile);
 end
