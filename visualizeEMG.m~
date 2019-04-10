@@ -442,7 +442,7 @@ a=handles.a;
 EMGdata=handles.EMGdata;
 
 %increment
-if a < height(EMGdata.trials)
+if a < height(EMGdata)
     a=a+1;
 end
 %handles.a=a;
