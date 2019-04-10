@@ -1,54 +1,52 @@
 function findEMG(filename)
-%{
-Authors: Nick Jackson (njackson@uoregon.edu) & Ian Greenhouse
- (img@uoregon.edu)
-
-This function identifies various EMG/TMS events in prerecorded EMG data.
-
-The user defines appropriate data parameters either at the command line
-or in the first block. Analysis parameters are defined in the second block,
-and might need adjusting depending on the quality of data.
-
-Event metrics will be added to the trials table depending on the type of
-data collected. The following shows the type of event detection and the
-associated metrics that are outputed:
-
-If EMG (electromyography) burst detection is on:
-
-ch#_EMGburst_onset = beginning of EMG burst
-ch#_EMGburst_offset = end of EMG burst
-ch#_EMG_RT = reaction time relative to photodiode event
-ch#_EMGburst_area = area under the EMG burst curve
-
-If MEP (motor evoked potential) detection is on:
-
-artloc = TMS artefact location
-ch#_MEP_time = MEP onset
-ch#_MEP_latency = time from TMS artefact to MEP time
-ch#_MEP_duration = length of MEP
-ch#_RMS_preMEP = root mean square tolerance, determines if pre-MEP noise
-may contaminate resting MEP measurements
-ch#_MEP_amplitude = peak-to-peak amplitude of MEP
-ch#_MEP_area = area under the MEP curve
-
-If CSP (cortical silent period) detection is on:
-
-ch#_CSP_onset = beginning of CSP
-ch#_CSP_offset = end of CSP
-
-output:
-Once the analysis code has run, a UI will open and prompt the user to enter
-a file name. The default file name is the original file name appended with
-"preprocessed". The saved file will contain the following:
-    parameters: struct
-        analysis parameters
-    subject : struct
-        generated from recordEMG
-    trials : trials
-        updated trials table with addition columns that contain calculated
-        metrics itemized above
-%}
-%% define data parameters
+% Authors: Nick Jackson (njackson@uoregon.edu) & Ian Greenhouse
+%  (img@uoregon.edu)
+% 
+% This function identifies various EMG/TMS events in prerecorded EMG data.
+% 
+% The user defines appropriate data parameters either at the command line
+% or in the first section of the code. D parameters are defined in 
+% the second section, and should be adjusted according to the data.
+% 
+% Event metrics will be added to the trials table depending on the analysis 
+% parameters. The following shows the type of event detection and the
+% associated metrics that are outputed:
+% 
+% If EMG (electromyography) burst detection is on:
+% 
+% ch#_EMGburst_onset = beginning of EMG burst
+% ch#_EMGburst_offset = end of EMG burst
+% ch#_EMG_RT = reaction time relative to photodiode event
+% ch#_EMGburst_area = area under the EMG burst curve
+% 
+% If MEP (motor evoked potential) detection is on:
+% 
+% artloc = TMS artefact location
+% ch#_MEP_time = MEP onset
+% ch#_MEP_latency = time from TMS artefact to MEP time
+% ch#_MEP_duration = length of MEP
+% ch#_RMS_preMEP = root mean square tolerance, determines if pre-MEP noise
+% may contaminate resting MEP measurements
+% ch#_MEP_amplitude = peak-to-peak amplitude of MEP
+% ch#_MEP_area = area under the MEP curve
+% 
+% If CSP (cortical silent period) detection is on:
+% 
+% ch#_CSP_onset = beginning of CSP
+% ch#_CSP_offset = end of CSP
+% 
+% output:
+% Once the analysis code has run, a UI will open and prompt the user to enter
+% a file name. The default file name is the original file name appended with
+% "preprocessed". The saved file will contain the following:
+%     parameters: struct
+%         analysis parameters
+%     subject : struct
+%         generated from recordEMG
+%     trials : trials
+%         updated trials table with addition columns that contain calculated
+%         metrics itemized above
+%% define analysis parameters
 use_command_line = 0;%toggle bool to suit parameter input preferences
 if ~use_command_line
     parameters.EMG = 1; % Detect EMG bursts: 0 = no, 1 = yes
@@ -59,7 +57,7 @@ if ~use_command_line
     parameters.CSP = 0; % Detect CSP: 0 = no, 1 = yes
     parameters.CSP_channels = [0];
 end
-%% define analysis parameters
+%% define data parameters
 %edit these to suit your analysis needs
 parameters.sampling_rate = 5000; % samples per second (Hz)
 parameters.emg_burst_threshold = .3; % raw threshold in V to consider for EMG
@@ -68,7 +66,6 @@ parameters.tms_artefact_threshold = .04; % raw threshold magnitude in V to consi
 parameters.MEP_window_post_artefact = .12; % time in s after TMS to measure MEP in seconds
 parameters.pre_TMS_reference_window = .1;  % time before TMS to serve as reference baseline for MEP onset
 parameters.min_TMS_to_MEP_latency = .018; % number of secs after TMS to begin MEP onset detection
-parameters.pre_TMS_reference_window = .1; % time before MEP to inspect for EMG activity
 parameters.RMS_preMEP_EMG_tolerance = .05; % root mean square EMG tolerance for including MEP
 
 % parameters for removing TMS artefact & MEP when detecting EMG in same channel as MEP
@@ -214,7 +211,7 @@ for i = 1:height(trials)
                 MEPsearchrange = MEPchannel(lower_limit_MEP_window:MEP_offset_index);
                 [max_MEP_value,MEP_max_sample_point] = max(MEPsearchrange);
                 [min_MEP_value,MEP_min_sample_point] = min(MEPsearchrange);
-                MEParea = sum(abs(MEPchannel(MEP_onset_index:MEP_offset_index)));
+                MEParea = sum(abs(MEPchannel(MEP_onset_index:MEP_offset_index)))/(MEP_max_sample_point - MEP_min_sample_point);
                 
                 % identify MEP onset
                 if ~isempty(MEP_onset_index)
@@ -273,7 +270,8 @@ for i = 1:height(trials)
                 trials.(['ch', num2str(parameters.MEP_channels(chan)) '_EMGburst_onset'])(i,1) = emg_burst_onset_time; % EMG burst onset
                 trials.(['ch', num2str(parameters.MEP_channels(chan)) '_EMGburst_offset'])(i,1) = emg_burst_offset_time_from_start; % EMG burst offset
                 trials.(['ch', num2str(parameters.MEP_channels(chan)) '_EMGburst_area'])(i,1) = ...
-                    sum(abs(signal_burst(round(emg_burst_onset_time * parameters.sampling_rate):round(emg_burst_offset_time_from_start * parameters.sampling_rate)))); % EMG burst area
+                    sum(abs(signal_burst(round(emg_burst_onset_time * parameters.sampling_rate):round(emg_burst_offset_time_from_start * parameters.sampling_rate))))/ ...
+                    round(emg_burst_offset_time_from_start * parameters.sampling_rate) - round(emg_burst_onset_time * parameters.sampling_rate); % EMG burst area
                 
                 if trials.stim_onset(i,1)
                     trials.(['ch', num2str(parameters.MEP_channels(chan)) '_EMG_RT'])(i,1) = trials.(['ch', num2str(parameters.MEP_channels(chan)) '_EMGburst_onset'])(i,1) - trials.stim_onset(i,1);
@@ -301,7 +299,8 @@ for i = 1:height(trials)
                 trials.(['ch', num2str(non_MEP_channels(chan)) '_EMGburst_onset'])(i,1) = emg_burst_onset_time;
                 trials.(['ch', num2str(non_MEP_channels(chan)) '_EMGburst_offset'])(i,1) = emg_burst_offset_time_from_start;
                 trials.(['ch', num2str(non_MEP_channels(chan)) '_EMGburst_area'])(i,1) = ...
-                    sum(abs(signal_burst(round(emg_burst_onset_time * parameters.sampling_rate):round(emg_burst_offset_time_from_start * parameters.sampling_rate)))); % EMG burst area
+                    sum(abs(signal_burst(round(emg_burst_onset_time * parameters.sampling_rate):round(emg_burst_offset_time_from_start * parameters.sampling_rate))))/ ...
+                    round(emg_burst_offset_time_from_start * parameters.sampling_rate) - round(emg_burst_onset_time * parameters.sampling_rate); % EMG burst area
                 
                 if trials.stim_onset(i,1)
                     trials.(['ch', num2str(non_MEP_channels(chan)) '_EMG_RT'])(i,1) = trials.(['ch', num2str(non_MEP_channels(chan)) '_EMGburst_onset'])(i,1) - trials.stim_onset(i,1);

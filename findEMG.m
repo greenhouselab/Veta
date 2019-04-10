@@ -5,8 +5,8 @@ function findEMG(filename)
 % This function identifies various EMG/TMS events in prerecorded EMG data.
 % 
 % The user defines appropriate data parameters either at the command line
-% or in the first block. Analysis parameters are defined in the second block,
-% and might need adjusting depending on the quality of data.
+% or in the first section of the code. Analysis parameters are defined in 
+% the second section, and should be adjusted according to the data.
 % 
 % Event metrics will be added to the trials table depending on the type of
 % data collected. The following shows the type of event detection and the
