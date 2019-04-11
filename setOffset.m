@@ -1,6 +1,6 @@
 function offset=setOffset(num_channels, diode)
 %{ 
-March 23, 2019 Nick Jackson (njackson@uoregon.edu) & Ian Greenhouse
+Authors: Nick Jackson (njackso6@uoregon.edu) & Ian Greenhouse
 (igreenhouse@uoregon.edu)
 
 Calculates electrode voltage offset for each channel. Aids in data visualization and later analysis.
