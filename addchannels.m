@@ -1,4 +1,14 @@
 function addchannels(s,diode)
+%{
+Authors: Nick Jackson (njackson@uoregon.edu) & Ian Greenhouse
+ (img@uoregon.edu)
+
+Input: type
+      diode: bool
+        indicates whether if diode data should be pulled
+      s: object
+        data acquisition session
+%}
 %% Adds channels for analog recording.
     %pair channel 1
     channel1 = addAnalogInputChannel(s,'Dev1','ai0','Voltage');
