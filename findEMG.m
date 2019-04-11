@@ -47,7 +47,7 @@ function findEMG(filename)
 %         updated trials table with addition columns that contain calculated
 %         metrics itemized above
 %% define data parameters
-use_command_line = 0;%toggle bool to suit parameter input preferences
+use_command_line = 1;%toggle bool to suit parameter input preferences
 if ~use_command_line
     parameters.EMG = 1; % Detect EMG bursts: 0 = no, 1 = yes
     parameters.EMG_burst_channels = [1 2];

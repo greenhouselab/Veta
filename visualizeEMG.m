@@ -1,5 +1,9 @@
 function varargout = visualizeEMG(varargin)
-% Last edit made 4/1/19 by IG
+% Authors: Nick Jackson (njackson@uoregon.edu) & Ian Greenhouse
+%  (img@uoregon.edu)
+% 
+% GUI for the visualization and interactive editing of EMG data.
+%
 % VISUALIZEEMG MATLAB code for visualizeEMG.fig
 %      VISUALIZEEMG, by itself, creates a new VISUALIZEEMG or raises the existing
 %      singleton*.
@@ -328,7 +332,7 @@ for n=1:subplot_number
     end
     
     if sum(ismember(EMGdata.trials.Properties.VariableNames,['ch' num2str(n) '_EMG_RT']))
-        subplot_text = sprintf(' EMG RT (s): %0.3f\n EMG duration (s): %0.3f\n EMG burst area: %0.3f', ...
+        subplot_text = sprintf(' EMG RT (s): %0.3f\n EMG duration (s): %0.3f\n EMG burst area (mV/s): %0.3f', ...
             EMGdata.trials.(['ch' num2str(n) '_EMG_RT'])(a,1), ...
             EMGdata.trials.(['ch' num2str(n) '_EMGburst_offset'])(a,1) - EMGdata.trials.(['ch' num2str(n) '_EMGburst_onset'])(a,1), ...
             EMGdata.trials.(['ch' num2str(n) '_EMGburst_area'])(a,1));
@@ -338,7 +342,7 @@ for n=1:subplot_number
     end
     
     if sum(ismember(EMGdata.trials.Properties.VariableNames,['ch' num2str(n) '_MEP_latency']))
-        subplot_text = sprintf(' preTMS RMS: %0.3f\n MEP latency (s): %0.3f\n MEP amp. (mV): %0.3f\n MEP area: %0.3f\n MEP duration (s): %0.3f', ...
+        subplot_text = sprintf(' preTMS RMS: %0.3f\n MEP latency (s): %0.3f\n MEP amp. (mV): %0.3f\n MEP area (mV/s): %0.3f\n MEP duration (s): %0.3f', ...
             EMGdata.trials.(['ch',num2str(n),'_RMS_preMEP'])(a,1), ...
             EMGdata.trials.(['ch',num2str(n),'_MEP_latency'])(a,1), ...
             EMGdata.trials.(['ch',num2str(n),'_MEP_amplitude'])(a,1), ...
@@ -644,7 +648,7 @@ MEPsearchrange = MEPchannel(round(x_new(1) * EMGdata.parameters.sampling_rate):r
 [max_MEP_value,MEP_max_sample_point] = max(MEPsearchrange);
 [min_MEP_value,MEP_min_sample_point] = min(MEPsearchrange);
 EMGdata.trials.ch1_MEP_amplitude(a,1)=max_MEP_value-min_MEP_value;
-EMGdata.trials.ch1_MEP_area(a,1) = sum(abs(MEPsearchrange));
+EMGdata.trials.ch1_MEP_area(a,1) = sum(abs(MEPsearchrange)) / (round(x_new(2) * EMGdata.parameters.sampling_rate) - round(x_new(1) * EMGdata.parameters.sampling_rate));
 EMGdata.trials.ch1_MEP_duration(a,1) = EMGdata.trials.ch1_MEP_offset(a,1)-EMGdata.trials.ch1_MEP_latency(a,1);
 
 EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
@@ -672,7 +676,7 @@ MEPsearchrange = MEPchannel(round(x_new(1) * EMGdata.parameters.sampling_rate):r
 [max_MEP_value,MEP_max_sample_point] = max(MEPsearchrange);
 [min_MEP_value,MEP_min_sample_point] = min(MEPsearchrange);
 EMGdata.trials.ch2_MEP_amplitude(a,1)=max_MEP_value-min_MEP_value;
-EMGdata.trials.ch2_MEP_area(a,1) = sum(abs(MEPsearchrange));
+EMGdata.trials.ch2_MEP_area(a,1) = sum(abs(MEPsearchrange)) / (round(x_new(2) * EMGdata.parameters.sampling_rate) - round(x_new(1) * EMGdata.parameters.sampling_rate));
 EMGdata.trials.ch2_MEP_duration(a,1) = EMGdata.trials.ch2_MEP_offset(a,1)-EMGdata.trials.ch2_MEP_latency(a,1);
 
 EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
@@ -699,7 +703,7 @@ MEPsearchrange = MEPchannel(round(x_new(1) * EMGdata.parameters.sampling_rate):r
 [max_MEP_value,MEP_max_sample_point] = max(MEPsearchrange);
 [min_MEP_value,MEP_min_sample_point] = min(MEPsearchrange);
 EMGdata.trials.ch3_MEP_amplitude(a,1)=max_MEP_value-min_MEP_value;
-EMGdata.trials.ch3_MEP_area(a,1) = sum(abs(MEPsearchrange));
+EMGdata.trials.ch3_MEP_area(a,1) = sum(abs(MEPsearchrange)) / (round(x_new(2) * EMGdata.parameters.sampling_rate) - round(x_new(1) * EMGdata.parameters.sampling_rate));
 EMGdata.trials.ch3_MEP_duration(a,1) = EMGdata.trials.ch3_MEP_offset(a,1)-EMGdata.trials.ch3_MEP_latency(a,1);
 
 EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
@@ -726,7 +730,7 @@ MEPsearchrange = MEPchannel(round(x_new(1) * EMGdata.parameters.sampling_rate):r
 [max_MEP_value,MEP_max_sample_point] = max(MEPsearchrange);
 [min_MEP_value,MEP_min_sample_point] = min(MEPsearchrange);
 EMGdata.trials.ch4_MEP_amplitude(a,1)=max_MEP_value-min_MEP_value;
-EMGdata.trials.ch4_MEP_area(a,1) = sum(abs(MEPsearchrange));
+EMGdata.trials.ch4_MEP_area(a,1) = sum(abs(MEPsearchrange)) / (round(x_new(2) * EMGdata.parameters.sampling_rate) - round(x_new(1) * EMGdata.parameters.sampling_rate));
 EMGdata.trials.ch4_MEP_duration(a,1) = EMGdata.trials.ch4_MEP_offset(a,1)-EMGdata.trials.ch4_MEP_latency(a,1);
 
 EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
@@ -823,7 +827,7 @@ EMGrange = EMGchannel(round(x_new(1) * EMGdata.parameters.sampling_rate):round(x
 EMGdata.trials.ch1_EMGburst_onset(a,1)=x_new(1,1);
 EMGdata.trials.ch1_EMGburst_offset(a,1)=x_new(2,1);
 EMGdata.trials.ch1_EMG_RT(a,1) = EMGdata.trials.ch1_EMGburst_onset(a,1) - EMGdata.trials.stim_onset(a,1);
-EMGdata.trials.ch1_EMGburst_area(a,1) = sum(abs(EMGrange));
+EMGdata.trials.ch1_EMGburst_area(a,1) = sum(abs(EMGrange)) / (round(x_new(2) * EMGdata.parameters.sampling_rate) - round(x_new(1) * EMGdata.parameters.sampling_rate));
 EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
 handles.EMGdata = EMGdata;
 plot_figure(EMGdata,handles,a)
@@ -845,7 +849,7 @@ EMGrange = EMGchannel(round(x_new(1) * EMGdata.parameters.sampling_rate):round(x
 EMGdata.trials.ch2_EMGburst_onset(a,1)=x_new(1,1);
 EMGdata.trials.ch2_EMGburst_offset(a,1)=x_new(2,1);
 EMGdata.trials.ch2_EMG_RT(a,1) = EMGdata.trials.ch2_EMGburst_onset(a,1) - EMGdata.trials.stim_onset(a,1);
-EMGdata.trials.ch2_EMGburst_area(a,1) = sum(abs(EMGrange));
+EMGdata.trials.ch2_EMGburst_area(a,1) = sum(abs(EMGrange)) / (round(x_new(2) * EMGdata.parameters.sampling_rate) - round(x_new(1) * EMGdata.parameters.sampling_rate));
 EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
 handles.EMGdata = EMGdata;
 plot_figure(EMGdata,handles,a)
@@ -867,7 +871,7 @@ EMGrange = EMGchannel(round(x_new(1) * EMGdata.parameters.sampling_rate):round(x
 EMGdata.trials.ch3_EMGburst_onset(a,1)=x_new(1,1);
 EMGdata.trials.ch3_EMGburst_offset(a,1)=x_new(2,1);
 EMGdata.trials.ch3_EMG_RT(a,1) = EMGdata.trials.ch3_EMGburst_onset(a,1) - EMGdata.trials.stim_onset(a,1);
-EMGdata.trials.ch2_EMGburst_area(a,1) = sum(abs(EMGrange));
+EMGdata.trials.ch2_EMGburst_area(a,1) = sum(abs(EMGrange)) / (round(x_new(2) * EMGdata.parameters.sampling_rate) - round(x_new(1) * EMGdata.parameters.sampling_rate));
 EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
 handles.EMGdata = EMGdata;
 plot_figure(EMGdata,handles,a)
@@ -889,7 +893,7 @@ EMGrange = EMGchannel(round(x_new(1) * EMGdata.parameters.sampling_rate):round(x
 EMGdata.trials.ch4_EMGburst_onset(a,1)=x_new(1,1);
 EMGdata.trials.ch4_EMGburst_offset(a,1)=x_new(2,1);
 EMGdata.trials.ch4_EMG_RT(a,1) = EMGdata.trials.ch4_EMGburst_onset(a,1) - EMGdata.trials.stim_onset(a,1);
-EMGdata.trials.ch2_EMGburst_area(a,1) = sum(abs(EMGrange));
+EMGdata.trials.ch2_EMGburst_area(a,1) = sum(abs(EMGrange)) / (round(x_new(2) * EMGdata.parameters.sampling_rate) - round(x_new(1) * EMGdata.parameters.sampling_rate));
 EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
 handles.EMGdata = EMGdata;
 plot_figure(EMGdata,handles,a)
