@@ -1,12 +1,28 @@
 function recordEMG()
-% April 1, 2019 Nick Jackson (njackson@uoregon.edu) & Ian Greenhouse
-% (img@uoregon.edu)
-% This function plots and records EMG. TMS interface capabilities are also
-% supported enabling triggering of TMS pulses at prespecified times.
+%{
+Authors: Nick Jackson (njackson@uoregon.edu) & Ian Greenhouse
+ (img@uoregon.edu)
 
+This function plots and records EMG. TMS interface capabilities are also
+supported enabling triggering of TMS pulses at prespecified times.
+
+Adjust the default parameters and DAQ_vendor in order to suit your experimental
+needs. 
+
+The function calls four helper functions:
+setOffset - calculates electrode voltage offset for each channel
+EMGfigure - opens and refreshes figure for each EMG sweep
+addchannels - adds channels for analog recording
+pulldata - extracts data from plotted figure and inputs into trials table
+
+Output : type
+    trials : table  
+        contains all visualized EMG recordings
+    subject : struct  
+        contains subject data entered at command line
+%}
 
 %% Default Parameters (edit these)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 parameters.number_of_sweeps = 4000; % number of sweeps
 parameters.sampling_rate = 5000; % Hz (depends on hardware)
 parameters.sweep_duration = 2; % in seconds
@@ -22,9 +38,6 @@ parameters.number_of_MVC_sweeps = 4; % number of sweeps if MVC is selected
 parameters.MVC_percentage = .05; % calculates 5 percent maximum peak to peak amplitude
 parameters.EMG_plot_Ylims_MVC = [-5 5]; % larger Y axis range for MVC
 parameters.MVC_sweep_duration = 4; % in seconds
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 %% DAQ Vendor
 % DAQ toolbox works with 'ni', 'digilent', 'directsound', 'adi', or 'mcc'.
 % See https://www.mathworks.com/help/daq/ref/daq.getvendors.html
@@ -80,7 +93,6 @@ if mvc
     parameters.sweep_duration = parameters.MVC_sweep_duration;% in seconds
     parameters.xlims=[0 parameters.sweep_duration];
 end
-
 %% preallocate table
 trials = table();
 trials.sweep_num(1:parameters.number_of_sweeps,1) = 1:parameters.number_of_sweeps;
@@ -111,8 +123,6 @@ for i=1:parameters.number_of_sweeps
     s.wait();
     %% extract data from figure
     [trials]=pulldata(diode,i,f1,num_channels,trials);
-    %[trials]=pulldata011619(diode,i,f1,num_channels,trials);
-
     EMGfigure(num_channels,parameters.EMG_plot_Ylims,parameters.reference_line,diode,f1,[],parameters.xlims)
     %% save after each sweep
     if parameters.save_per_sweep && save_data
@@ -194,7 +204,6 @@ if save_data
 end    
 %% close figure
 close(f1);
-
 %% callback plotData function
     function plotData(src,event)
         plot_data = [];
