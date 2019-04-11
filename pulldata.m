@@ -1,20 +1,24 @@
 function [trials]=pulldata(diode,i,f1,num_channels,trials)
-% March 23, 2019 Nick Jackson (njackson@uoregon.edu) & Ian Greenhouse
-% (igreenhouse@uoregon.edu)
-%% Extracts data from plotted figure and saves into trials table. Called from recordEMG function.
-% input:
-%       diode: bool
-%             indicates whether if diode data should be pulled
-%         i: double
-%             current sweep number
-%         f1: Figure
-%             To pull data from
-%         num_channels: double
-%             Number of channels of data to extract
-%         trials: table
-% output:
-%       trials: table
-%            updated with data from sweep i
+%{
+Authors: Nick Jackson (njackson@uoregon.edu) & Ian Greenhouse
+ (img@uoregon.edu)
+
+Extracts data from plotted figure and saves into trials table. Called from recordEMG function.
+
+Input: type
+    diode: bool
+        indicates whether if diode data should be pulled
+    i: double
+        current sweep number
+    f1: Figure
+        to pull data from
+    num_channels: double
+        number of channels of data to extract
+    trials: table
+Output: type
+      trials: table
+           updated with data from sweep i
+%}
 if ~diode
     chan_plot_number = 1;
     for m = num_channels:-1:1
@@ -33,7 +37,6 @@ end
 
 if diode
     chan_plot_number = 1;
-    %save channels
     for m = num_channels+1:-1:2
         FileName1=f1.Children(m).Children;
         FileName2 = get(FileName1, 'YData');
