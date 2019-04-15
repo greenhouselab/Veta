@@ -88,13 +88,12 @@ plot_figure(EMGdata,handles,a)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%update handles variables
+% update handles variables
 handles.EMGdata = EMGdata;
 handles.a = a;
 handles.File=File;
-%handles.output = hObject;
 
-%set checkbox
+% set checkbox
 if EMGdata.trials.trial_accept(a,1)==1
     set(handles.accept_checkbox,'Value',1)
 else
