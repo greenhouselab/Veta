@@ -81,6 +81,7 @@ ylims = [-1 1; -1 1; -1 1; -1 1];
 handles.ylims=ylims;
 plot_figure(EMGdata,handles,a)
 
+<<<<<<< HEAD
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -314,15 +315,6 @@ for n=1:subplot_number
         set(handles.(['ch', num2str(n),'_clearCSP']),'FontWeight', 'bold');
     end
     
-    %     % add border to subplots (this screws up the zoom capabilities)
-    %     if n<subplot_number
-    %         rh = annotation('rectangle', [subplot_position(1)-.11 subplot_position(2)-.03 subplot_position(3)+.2 subplot_position(4)+.04]);
-    %         set(rh, 'LineWidth',2, 'Color', 'w');
-    %     elseif n==subplot_number
-    %         rh = annotation('rectangle', [subplot_position(1)-.11 subplot_position(2)-.045 subplot_position(3)+.2 subplot_position(4)+.055]);
-    %         set(rh, 'LineWidth',2, 'Color', 'w');
-    %     end
-    
     % add text to plots    
     title_text = sprintf('Sweep #: %d', a);
     if n==1
@@ -374,12 +366,9 @@ function enter_sweep_Callback(hObject, eventdata, handles)
 %        str2double(get(hObject,'String')) returns contents of enter_sweep as a double
 a = str2double(get(hObject,'String'));
 EMGdata = handles.EMGdata;
-%handles.a=a;
 
-%%%%%%%%%%%%%%%%%
 plot_figure(EMGdata,handles,a)
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %update handles variables
 handles.EMGdata = EMGdata;
 handles.a = a;
@@ -418,10 +407,8 @@ EMGdata=handles.EMGdata;
 if a>1
     a=a-1;
 end
-%%%%%%%%%%%%%%%
 plot_figure(EMGdata,handles,a)
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %update handles variables
 handles.EMGdata = EMGdata;
 handles.a = a;
@@ -448,11 +435,8 @@ EMGdata=handles.EMGdata;
 if a < height(EMGdata.trials)
     a=a+1;
 end
-%handles.a=a;
-%%%%%%%%%%%%%%%
 plot_figure(EMGdata,handles,a)
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %update handles variables
 handles.EMGdata = EMGdata;
 handles.a = a;
@@ -477,7 +461,6 @@ function accept_checkbox_Callback(hObject, eventdata, handles)
 EMGdata=handles.EMGdata;
 a=handles.a;
 
-%handles.accept_checkbox=accept_checkbox;
 accept_checkbox=handles.accept_checkbox;
 if (get(accept_checkbox,'Value') == ~get(accept_checkbox,'Max'))
     display('rejected')
