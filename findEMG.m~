@@ -216,7 +216,7 @@ for i = 1:height(trials)
                 MEP_onset_from_TMS = find(MEPsearchrange > parameters.MEP_onset_std_threshold * std(abs(preTMS_reference_data)),1); % first value that exceeds std threshold within rectified MEP search range
                 ipoints = findchangepts(MEPsearchrange, 'MaxNumChanges', 10, 'Statistic', 'mean'); % fewer change points may suffice
                 
-                % select option for determining MEP onset
+                % select option for determining MEP o
                 if parameters.MEP_std_or_chngpts
                     MEP_onset_index = ipoints(1) + lower_limit_MEP_window; % use findchangepts value
                 else

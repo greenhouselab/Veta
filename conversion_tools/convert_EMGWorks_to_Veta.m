@@ -22,7 +22,7 @@ for i = 1:length(files)
 end
 
 subject = struct();
-parameters.sampling_rate = EMGworks_data{i}.Fs;
+% parameters.sampling_rate = EMGworks_data{i}.Fs;
 outfile=[files(1).name(1:end-27),'_EMGWorks_to_Veta', date];
-uisave({'trials', 'files', 'subject', 'parameters', 'EMGworks_data'},outfile);
+uisave({'trials', 'files', 'subject', 'EMGworks_data'},outfile);
 end
