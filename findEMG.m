@@ -179,10 +179,10 @@ for i = 1:height(trials)
             MEPchannel = trials.(['ch', num2str(parameters.MEP_channels(chan))]){i,1};
             if parameters.artchan_index
                 artchannel = trials.(['ch', num2str(parameters.artchan_index)]){i,1};
-                [min_artefact_value, TMS_artefact_sample_index] = max(abs(artchannel));
+                [artefact_value, TMS_artefact_sample_index] = max(abs(artchannel));
             else
                 TMS_artefact_sample_index = find(MEPchannel > parameters.tms_artefact_threshold,1);
-                min_artefact_value = -1 * abs(MEPchannel(TMS_artefact_sample_index));
+                artefact_value = abs(MEPchannel(TMS_artefact_sample_index));
             end                                    
 
             %set range to look for preMEP EMG activity to calculate RMS
@@ -204,7 +204,7 @@ for i = 1:height(trials)
                 trials.trial_accept(i,1)=0;
             end
             
-            if min_artefact_value < -1 * abs(parameters.tms_artefact_threshold) % TMS artefact must exceed a threshold to be classified as an artefact
+            if artefact_value > abs(parameters.tms_artefact_threshold) % TMS artefact must exceed a threshold to be classified as an artefact
                 trials.artloc(i,1) = TMS_artefact_sample_index/parameters.sampling_rate; %artefact location scaled for visualization
                 
                 %define MEP search range
@@ -289,7 +289,7 @@ for i = 1:height(trials)
                 trials.(['ch', num2str(parameters.MEP_channels(chan)) '_EMGburst_offset'])(i,1) = emg_burst_offset_time_from_start; % EMG burst offset
                 trials.(['ch', num2str(parameters.MEP_channels(chan)) '_EMGburst_area'])(i,1) = ...
                     sum(abs(signal_burst(round(emg_burst_onset_time * parameters.sampling_rate):round(emg_burst_offset_time_from_start * parameters.sampling_rate))))/ ...
-                    round(emg_burst_offset_time_from_start * parameters.sampling_rate) - round(emg_burst_onset_time * parameters.sampling_rate); % EMG burst area
+                    (round(emg_burst_offset_time_from_start * parameters.sampling_rate) - round(emg_burst_onset_time * parameters.sampling_rate)); % EMG burst area
                 
                 if trials.stim_onset(i,1)
                     trials.(['ch', num2str(parameters.MEP_channels(chan)) '_EMG_RT'])(i,1) = trials.(['ch', num2str(parameters.MEP_channels(chan)) '_EMGburst_onset'])(i,1) - trials.stim_onset(i,1);
@@ -347,9 +347,9 @@ for i = 1:height(trials)
                 end
             else
                 artchannel = trials.(['ch', num2str(parameters.artchan_index)]){i,1};
-                [min_artefact_value, TMS_artefact_sample_index] = min(artchannel);
+                [artefact_value, TMS_artefact_sample_index] = max(abs(artchannel));
                 
-                if min_artefact_value < -1 * abs(parameters.tms_artefact_threshold) % TMS artefact must exceed a threshold to be classified as an artefact
+                if artefact_value > abs(parameters.tms_artefact_threshold) % TMS artefact must exceed a threshold to be classified as an artefact
                     trials.artloc(i,1) = TMS_artefact_sample_index/parameters.sampling_rate;%artefact location scaled for visualization
                     csp_signal = trials.(['ch', num2str(parameters.CSP_channels(chan))]){i,1};
                     [IUPPER, ILOWER, UPPERSUM] = cusum(abs(csp_signal));
