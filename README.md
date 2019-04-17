@@ -3,7 +3,7 @@
 
 ## Workflow
 
-![Workflow](https://raw.githubusercontent.com/greenhouselab/Veta/master/figures/Fig1_veta.tif)
+![Workflow](https://raw.githubusercontent.com/greenhouselab/Veta/master/figures/Fig1_veta.jpg)
 
 ### Main Functions
 	
