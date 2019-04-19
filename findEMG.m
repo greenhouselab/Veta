@@ -142,6 +142,7 @@ if parameters.EMG
     for chan = 1:length(parameters.EMG_burst_channels)
         trials.(['ch', num2str(parameters.EMG_burst_channels(chan)), '_EMGburst_onset'])(:,1) = 0;
         trials.(['ch', num2str(parameters.EMG_burst_channels(chan)), '_EMGburst_offset'])(:,1) = 0;
+        trials.(['ch', num2str(parameters.EMG_burst_channels(chan)), '_EMGburst_area'])(:,1) = 0;
     end
 end
 
@@ -154,6 +155,7 @@ if parameters.MEP
         trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_time'])(:,1) = 0;
         trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_latency'])(:,1) = 0;
         trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_offset'])(:,1) = 0;
+        trials.(['ch', num2str(parameters.MEP_channels(chan)), '_MEP_area'])(:,1) = 0;
     end
 end
 
@@ -318,7 +320,7 @@ for i = 1:height(trials)
                 trials.(['ch', num2str(non_MEP_channels(chan)) '_EMGburst_offset'])(i,1) = emg_burst_offset_time_from_start;
                 trials.(['ch', num2str(non_MEP_channels(chan)) '_EMGburst_area'])(i,1) = ...
                     sum(abs(signal_burst(round(emg_burst_onset_time * parameters.sampling_rate):round(emg_burst_offset_time_from_start * parameters.sampling_rate))))/ ...
-                    round(emg_burst_offset_time_from_start * parameters.sampling_rate) - round(emg_burst_onset_time * parameters.sampling_rate); % EMG burst area
+                    (round(emg_burst_offset_time_from_start * parameters.sampling_rate) - round(emg_burst_onset_time * parameters.sampling_rate)); % EMG burst area
                 
                 if trials.stim_onset(i,1)
                     trials.(['ch', num2str(non_MEP_channels(chan)) '_EMG_RT'])(i,1) = trials.(['ch', num2str(non_MEP_channels(chan)) '_EMGburst_onset'])(i,1) - trials.stim_onset(i,1);
