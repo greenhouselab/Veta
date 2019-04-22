@@ -218,7 +218,7 @@ for i = 1:height(trials)
                 
                 % detect MEP onset and offset point;
                 MEP_onset_from_TMS = find(MEPsearchrange > parameters.MEP_onset_std_threshold * std(abs(preTMS_reference_data)),1); % first value that exceeds std threshold within rectified MEP search range
-                ipoints = findchangepts(MEPsearchrange, 'MaxNumChanges', 4, 'Statistic', 'mean'); % fewer change points may suffice
+                ipoints = findchangepts(MEPsearchrange, 'MaxNumChanges', 10, 'Statistic', 'mean'); % fewer change points may suffice
                 
                 % select option for determining MEP onset
                 if parameters.MEP_std_or_chngpts
@@ -346,7 +346,7 @@ for i = 1:height(trials)
                     trials.(['ch', num2str(parameters.CSP_channels(chan)) '_CSP_onset'])(i,1) = csp_start_loc/parameters.sampling_rate;
                 end
                 if csp_start_loc
-                    [peak2, csp_end_position] = findpeaks(-1*UPPERSUM(round(csp_start_loc):end), 'MinPeakProminence', 1, 'NPeaks', 1); % default 5, lower may suffice
+                    [peak2, csp_end_position] = findpeaks(-1*UPPERSUM(round(csp_start_loc):end), 'MinPeakProminence', 5, 'NPeaks', 1); % default 5, lower may suffice
                     csp_end_loc = csp_end_position + csp_start_loc;
                 end
                 if csp_end_loc

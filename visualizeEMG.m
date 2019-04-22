@@ -76,7 +76,7 @@ end
 
 
 % this is where to set the y-axis limits for channel plots
-ylims = [-1 1; -1 1; -1 1; -1 1];
+ylims = [-5 5; -5 5; -5 5; -5 5];
 
 handles.ylims=ylims;
 plot_figure(EMGdata,handles,a)
