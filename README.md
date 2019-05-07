@@ -1,4 +1,6 @@
-# **VETA**
+# **VETA** 
+[![DOI](https://zenodo.org/badge/159408605.svg)](https://zenodo.org/badge/latestdoi/159408605)
+
 ## a MATLAB toolbox for the collection, analysis, and visualization of EMG and TMS
 
 ## Workflow
