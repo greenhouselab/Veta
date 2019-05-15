@@ -117,6 +117,8 @@ end
 %% find photodiode event
 if any(strcmp('photodiode', trials.Properties.VariableNames))
     trials = findDiode(trials,parameters);
+else
+    trials.stim_onset(:,1) = zeros;
 end
 %% Find TMS, MEP, and EMG events
 trials = findEvents(trials,parameters);
