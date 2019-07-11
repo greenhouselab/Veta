@@ -211,7 +211,7 @@ for n=1:subplot_number
     
     % add y label
     if ~photodiode || n<subplot_number
-        ylabel(['ch ',num2str(n),' (mV)'],'FontSize',14, 'FontName', 'Arial', 'FontWeight', 'bold');%add channel label
+        ylabel(['ch',num2str(EMG_channel_nums(n)),' (mV)'],'FontSize',14, 'FontName', 'Arial', 'FontWeight', 'bold');%add channel label
     elseif photodiode && n==subplot_number
         ylabel('photodiode','FontSize',14, 'FontName', 'Arial', 'FontWeight', 'bold');
     end
@@ -226,9 +226,9 @@ for n=1:subplot_number
     
     if EMGdata.parameters.MEP % if TMS was used        
         % add MEP line
-        if ismember(n,EMGdata.parameters.MEP_channels) && EMGdata.trials.(['ch', num2str(n),'_MEP_time'])(a,1)
-            MEP_on = EMGdata.trials.(['ch', num2str(n),'_MEP_time'])(a,1);
-            MEP_off = EMGdata.trials.artloc(a,1) + EMGdata.trials.(['ch', num2str(n),'_MEP_offset'])(a,1);
+        if ismember(n,EMGdata.parameters.MEP_channels) && EMGdata.trials.(['ch',num2str(EMG_channel_nums(n)),'_MEP_time'])(a,1)
+            MEP_on = EMGdata.trials.(['ch',num2str(EMG_channel_nums(n)),'_MEP_time'])(a,1);
+            MEP_off = EMGdata.trials.artloc(a,1) + EMGdata.trials.(['ch',num2str(EMG_channel_nums(n)),'_MEP_offset'])(a,1);
            if EMGdata.trials.artloc(a,1)==0
                MEP_on = 0;
                MEP_off = 0;
@@ -245,8 +245,8 @@ for n=1:subplot_number
     
     %add CSP patch
     if EMGdata.parameters.CSP && ismember(n,EMGdata.parameters.CSP_channels)
-        CSP_on=EMGdata.trials.(['ch', num2str(n), '_CSP_onset'])(a,1);
-        CSP_off=EMGdata.trials.(['ch', num2str(n), '_CSP_offset'])(a,1);
+        CSP_on=EMGdata.trials.(['ch',num2str(EMG_channel_nums(n)), '_CSP_onset'])(a,1);
+        CSP_off=EMGdata.trials.(['ch',num2str(EMG_channel_nums(n)), '_CSP_offset'])(a,1);
         patch([CSP_on CSP_on CSP_off CSP_off],[ylims(n, 1) ylims(n, 2) ylims(n, 2) ylims(n, 1)],CSP_color);
         alpha(.7);
         if (EMGdata.parameters.EMG && ~ismember(n,EMGdata.parameters.EMG_burst_channels)) | ((EMGdata.parameters.MEP && ismember(n,EMGdata.parameters.MEP_channels)))
@@ -265,8 +265,8 @@ for n=1:subplot_number
     
     %add EMG burst patch
     if EMGdata.parameters.EMG && ismember(n,EMGdata.parameters.EMG_burst_channels)
-        burst_on=EMGdata.trials.(['ch', num2str(n), '_EMGburst_onset'])(a,1);
-        burst_off=EMGdata.trials.(['ch', num2str(n), '_EMGburst_offset'])(a,1);
+        burst_on=EMGdata.trials.(['ch',num2str(EMG_channel_nums(n)), '_EMGburst_onset'])(a,1);
+        burst_off=EMGdata.trials.(['ch',num2str(EMG_channel_nums(n)), '_EMGburst_offset'])(a,1);
         patch([burst_on burst_on burst_off burst_off],[ylims(n, 1) ylims(n, 2) ylims(n, 2) ylims(n, 1)],EMG_color);
         alpha(.7);
         set(gca,'children',flipud(get(gca,'children')))%plots patch behind trace
