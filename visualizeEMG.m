@@ -190,10 +190,19 @@ EMG_color = [.9 .7 1];
 CSP_color = [.7 1 .5];
 diode_color = [0 1 1];
 
+trials_fields = fieldnames(EMGdata.trials);
+EMG_chan_index = 1;
+for field_i = 1:length(trials_fields)
+    if sum(contains(trials_fields,['ch', num2str(field_i)]))
+        EMG_channel_nums(EMG_chan_index) = field_i;
+        EMG_chan_index = EMG_chan_index + 1;
+    end
+end
+
 for n=1:subplot_number
     subplot_handle = subplot(subplot_number,1,n);
     if photodiode && n < subplot_number || ~photodiode
-        y=EMGdata.trials.(['ch',num2str(n)]){a,1};
+        y=EMGdata.trials.(['ch',num2str(EMG_channel_nums(n))]){a,1};
     else
         y=EMGdata.trials.photodiode{a,1};
     end
