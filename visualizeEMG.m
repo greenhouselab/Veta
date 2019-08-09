@@ -27,7 +27,7 @@ function varargout = visualizeEMG(varargin)
 
 % Edit the above text to modify the response to help visualizeEMG
 
-% Last Modified by GUIDE v2.5 05-Apr-2019 13:15:58
+% Last Modified by GUIDE v2.5 09-Aug-2019 11:47:19
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -56,6 +56,12 @@ function visualizeEMG_OpeningFcn(hObject, eventdata, handles, varargin)
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to visualizeEMG (see VARARGIN)
 
+%% set the y-axis limits for plots
+plot1_ylims = [-5 5];
+plot2_ylims = [-5 5];
+plot3_ylims = [-5 5];
+plot4_ylims = [-5 5];
+%% locate files and load data
 if numel(varargin)
     filename = varargin{1};
     File = fullfile(pwd, filename);
@@ -74,9 +80,7 @@ else
     handles.num_start_edits = sum(EMGdata.trials.edited);
 end
 
-
-% this is where to set the y-axis limits for channel plots
-ylims = [-5 5; -5 5; -5 5; -5 5];
+ylims = [plot1_ylims; plot2_ylims; plot3_ylims; plot4_ylims];
 
 handles.ylims=ylims;
 plot_figure(EMGdata,handles,a)
@@ -175,6 +179,8 @@ end
 if any(strcmp('photodiode', EMGdata.trials.Properties.VariableNames))
     photodiode=1;
     subplot_number=EMGdata.parameters.num_channels+1;
+    set(handles.('diode_adjust'),'visible', 'on');
+    set(handles.('clear_diode'),'visible','on');
 else
     subplot_number=EMGdata.parameters.num_channels;
     photodiode=0;
@@ -272,7 +278,7 @@ for n=1:subplot_number
         set(gca,'children',flipud(get(gca,'children')))%plots patch behind trace
     end    
 
-    %add diode
+    %add diode_adjust
     if photodiode && n==subplot_number && EMGdata.trials.stim_onset(a,1)
         line([EMGdata.trials.stim_onset(a,1) EMGdata.trials.stim_onset(a,1)], ylims(n, :) ,'Color',diode_color,'Marker','o')
     end
@@ -325,6 +331,16 @@ for n=1:subplot_number
         set(handles.(['ch', num2str(n),'_clearCSP']),'BackgroundColor', CSP_color);
         set(handles.(['ch', num2str(n),'_clearCSP']),'FontWeight', 'bold');
     end
+    
+    if photodiode
+        set(handles.('diode_adjust'),'Position', [subplot_position(1)-(3*button_width) subplot_top-button_height button_width button_height]);
+        set(handles.('diode_adjust'),'BackgroundColor', 'red');
+        set(handles.('diode_adjust'),'FontWeight', 'bold');
+        
+        set(handles.('clear_diode'),'Position', [subplot_position(1)-(2*button_width) subplot_top-button_height button_width button_height]);
+        set(handles.('clear_diode'),'BackgroundColor', 'red');
+        set(handles.('clear_diode'),'FontWeight', 'bold');
+    end    
     
     % add text to plots    
     title_text = sprintf('Sweep #: %d', a);
@@ -1085,6 +1101,44 @@ EMGdata=handles.EMGdata;
 
 EMGdata.trials.ch4_CSP_onset(a,1)=0;
 EMGdata.trials.ch4_CSP_offset(a,1)=0;
+EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
+
+handles.EMGdata = EMGdata;
+plot_figure(EMGdata,handles,a);
+guidata(hObject, handles);
+
+%% --- Executes on button press in diode_adjust.
+function diode_adjust_Callback(hObject, eventdata, handles)
+% hObject    handle to diode_adjust (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+a = handles.a;
+EMGdata = handles.EMGdata;
+% manually select diode_adjust artefact point
+x_new = ginput(1);
+EMGdata.trials.stim_onset(a,1) = x_new(1);
+EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
+for n = 1:length(EMGdata.parameters.EMG_burst_channels)
+    if EMGdata.trials.(['ch', num2str(EMGdata.parameters.EMG_burst_channels(n)),'_EMG_RT'])(a,1)
+        EMGdata.trials.(['ch', num2str(EMGdata.parameters.EMG_burst_channels(n)),'_EMG_RT'])(a,1) = ...
+            EMGdata.trials.(['ch', num2str(EMGdata.parameters.EMG_burst_channels(n)),'_EMGburst_onset'])(a,1) - EMGdata.trials.stim_onset(a,1);
+    end
+end
+
+handles.EMGdata = EMGdata;
+plot_figure(EMGdata,handles,a)
+guidata(hObject, handles);
+
+
+%% --- Executes on button press in clear_diode.
+function clear_diode_Callback(hObject, eventdata, handles)
+% hObject    handle to clear_diode (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+a=handles.a;
+EMGdata=handles.EMGdata;
+
+EMGdata.trials.stim_onset(a,1)=0;
 EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
 
 handles.EMGdata = EMGdata;
