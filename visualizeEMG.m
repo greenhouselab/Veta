@@ -57,11 +57,18 @@ function visualizeEMG_OpeningFcn(hObject, eventdata, handles, varargin)
 % varargin   command line arguments to visualizeEMG (see VARARGIN)
 
 %% set the y-axis limits for plots
-plot1_ylims = [-5 5];
-plot2_ylims = [-5 5];
-plot3_ylims = [-5 5];
-plot4_ylims = [-5 5];
-%% locate files and load data
+use_default_limits = input('Would you like to use the default y-axis limits ([-5 5] volts)? yes(1) or no(0): ');
+if use_default_limits
+    plot1_ylims = [-5 5];
+    plot2_ylims = [-5 5];
+    plot3_ylims = [-5 5];
+    plot4_ylims = [-5 5];
+    ylims = [plot1_ylims; plot2_ylims; plot3_ylims; plot4_ylims];
+else
+    user_defined_limits = input('Enter preferred y-axis limits with one pair per channel (e.g. [-5 5] or [-2 2; -3 5; -1 1]): ');
+    ylims = user_defined_limits;
+end
+    %% locate files and load data
 if numel(varargin)
     filename = varargin{1};
     File = fullfile(pwd, filename);
@@ -79,8 +86,6 @@ if ~sum(ismember(EMGdata.trials.Properties.VariableNames,'edited'))
 else
     handles.num_start_edits = sum(EMGdata.trials.edited);
 end
-
-ylims = [plot1_ylims; plot2_ylims; plot3_ylims; plot4_ylims];
 
 handles.ylims=ylims;
 plot_figure(EMGdata,handles,a)
@@ -334,11 +339,11 @@ for n=1:subplot_number
     
     if photodiode
         set(handles.('diode_adjust'),'Position', [subplot_position(1)-(3*button_width) subplot_top-button_height button_width button_height]);
-        set(handles.('diode_adjust'),'BackgroundColor', 'red');
+        set(handles.('diode_adjust'),'BackgroundColor', diode_color);
         set(handles.('diode_adjust'),'FontWeight', 'bold');
         
         set(handles.('clear_diode'),'Position', [subplot_position(1)-(2*button_width) subplot_top-button_height button_width button_height]);
-        set(handles.('clear_diode'),'BackgroundColor', 'red');
+        set(handles.('clear_diode'),'BackgroundColor', diode_color);
         set(handles.('clear_diode'),'FontWeight', 'bold');
     end    
     
