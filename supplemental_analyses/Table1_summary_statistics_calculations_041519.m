@@ -1,4 +1,4 @@
-%% SICI table data
+x%% SICI table data
 SICI_summary = table();
 
 %findEMG

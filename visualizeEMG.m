@@ -189,6 +189,8 @@ if any(strcmp('photodiode', EMGdata.trials.Properties.VariableNames))
 else
     subplot_number=EMGdata.parameters.num_channels;
     photodiode=0;
+    set(handles.('diode_adjust'),'visible', 'off');
+    set(handles.('clear_diode'),'visible','off');
 end
 
 % clear annotations
