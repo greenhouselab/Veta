@@ -1,4 +1,4 @@
-x%% SICI table data
+%% SICI table data
 SICI_summary = table();
 
 %findEMG
@@ -105,12 +105,12 @@ uiload()
 CSP_summary.find_edited = 0;
 CSP_summary.find_accepted = sum(trials.trial_accept);
 CSP_summary.find_MEP_count = sum(trials.trial_accept(trials.ch1_MEP_latency>0));
-CSP_summary.find_mean_MEP_latency = mean(trials.ch1_MEP_latency);
-CSP_summary.find_std_MEP_latency = std(trials.ch1_MEP_latency);
-CSP_summary.find_mean_MEP_amplitude = mean(trials.ch1_MEP_amplitude);
-CSP_summary.find_std_MEP_amplitude = std(trials.ch1_MEP_amplitude);
-CSP_summary.find_mean_MEP_duration = mean(trials.ch1_MEP_duration);
-CSP_summary.find_std_MEP_duration = std(trials.ch1_MEP_duration);
+CSP_summary.find_mean_MEP_latency = mean(trials.ch1_MEP_latency(trials.ch1_MEP_latency>0));
+CSP_summary.find_std_MEP_latency = std(trials.ch1_MEP_latency(trials.ch1_MEP_latency>0));
+CSP_summary.find_mean_MEP_amplitude = mean(trials.ch1_MEP_amplitude(trials.ch1_MEP_latency>0));
+CSP_summary.find_std_MEP_amplitude = std(trials.ch1_MEP_amplitude(trials.ch1_MEP_latency>0));
+CSP_summary.find_mean_MEP_duration = mean(trials.ch1_MEP_duration(trials.ch1_MEP_latency>0));
+CSP_summary.find_std_MEP_duration = std(trials.ch1_MEP_duration(trials.ch1_MEP_latency>0));
 CSP_summary.find_CSP_count = sum(trials.trial_accept(trials.ch1_CSP_onset>0));
 CSP_summary.find_mean_CSP_duration = mean(trials.ch1_CSP_offset(trials.ch1_CSP_offset>0) - trials.ch1_CSP_onset(trials.ch1_CSP_offset>0));
 CSP_summary.find_std_CSP_duration = std(trials.ch1_CSP_offset(trials.ch1_CSP_offset>0) - trials.ch1_CSP_onset(trials.ch1_CSP_offset>0));
@@ -120,12 +120,12 @@ uiload()
 CSP_summary.vis_edited = sum(trials.edited);
 CSP_summary.vis_accepted = sum(trials.trial_accept);
 CSP_summary.vis_MEP_count = sum(trials.trial_accept(trials.ch1_MEP_latency>0));
-CSP_summary.vis_mean_MEP_latency = mean(trials.ch1_MEP_latency);
-CSP_summary.vis_std_MEP_latency = std(trials.ch1_MEP_latency);
-CSP_summary.vis_mean_MEP_amplitude = mean(trials.ch1_MEP_amplitude);
-CSP_summary.vis_std_MEP_amplitude = std(trials.ch1_MEP_amplitude);
-CSP_summary.vis_mean_MEP_duration = mean(trials.ch1_MEP_duration);
-CSP_summary.vis_std_MEP_duration = std(trials.ch1_MEP_duration);
+CSP_summary.vis_mean_MEP_latency = mean(trials.ch1_MEP_latency(trials.ch1_MEP_latency>0));
+CSP_summary.vis_std_MEP_latency = std(trials.ch1_MEP_latency(trials.ch1_MEP_latency>0));
+CSP_summary.vis_mean_MEP_amplitude = mean(trials.ch1_MEP_amplitude(trials.ch1_MEP_latency>0));
+CSP_summary.vis_std_MEP_amplitude = std(trials.ch1_MEP_amplitude(trials.ch1_MEP_latency>0));
+CSP_summary.vis_mean_MEP_duration = mean(trials.ch1_MEP_duration(trials.ch1_MEP_latency>0));
+CSP_summary.vis_std_MEP_duration = std(trials.ch1_MEP_duration(trials.ch1_MEP_latency>0));
 CSP_summary.find_CSP_count = sum(trials.trial_accept(trials.ch1_CSP_onset>0));
 CSP_summary.find_mean_CSP_duration = mean(trials.ch1_CSP_offset(trials.ch1_CSP_offset>0) - trials.ch1_CSP_onset(trials.ch1_CSP_offset>0));
 CSP_summary.find_std_CSP_duration = std(trials.ch1_CSP_offset(trials.ch1_CSP_offset>0) - trials.ch1_CSP_onset(trials.ch1_CSP_offset>0));
