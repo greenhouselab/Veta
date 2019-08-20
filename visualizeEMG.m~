@@ -57,13 +57,13 @@ function visualizeEMG_OpeningFcn(hObject, eventdata, handles, varargin)
 % varargin   command line arguments to visualizeEMG (see VARARGIN)
 
 %% set the y-axis limits for plots
-use_default_limits = input('Would you like to use the default y-axis limits ([-1 1; -1 1; -1 1; -.5 .5] volts)? yes(1) or no(0): ');
+use_default_limits = input('Would you like to use the default y-axis limits ([-5 5] volts)? yes(1) or no(0): ');
 %ylims = [-1 1; -1 1; -1 1; -.5 .5];
 if use_default_limits
-    plot1_ylims = [-1 1];
-    plot2_ylims = [-1 1];
-    plot3_ylims = [-1 1];
-    plot4_ylims = [-.5 .5];
+    plot1_ylims = [-5 5];
+    plot2_ylims = [-5 5];
+    plot3_ylims = [-5 5];
+    plot4_ylims = [-5 5];
     ylims = [plot1_ylims; plot2_ylims; plot3_ylims; plot4_ylims];
 else
     user_defined_limits = input('Enter preferred y-axis limits with one pair per channel (e.g. [-5 5] or [-2 2; -3 5; -1 1]): ');
@@ -203,7 +203,6 @@ TMS_color = [1 0 0];
 EMG_color = [.9 .7 1];
 CSP_color = [.7 1 .5];
 diode_color = [0 1 1];
-stop_diode_color = [1 .2 .5];
 
 trials_fields = fieldnames(EMGdata.trials);
 EMG_chan_index = 1;
@@ -292,11 +291,6 @@ for n=1:subplot_number
         line([EMGdata.trials.go_stim_onset(a,1) EMGdata.trials.go_stim_onset(a,1)], ylims(n, :) ,'Color',diode_color,'Marker','o') %%%%MF
     end
     
-     %diode line for stop stimulus onset %%%%MF
-    if photodiode && n==subplot_number && EMGdata.trials.stop_stim_onset(a,1)
-        line([EMGdata.trials.stop_stim_onset(a,1) EMGdata.trials.stop_stim_onset(a,1)], ylims(n, :) ,'Color',stop_diode_color,'Marker','o')
-    end
-    
     % subplot position
     subplot_position = subplot_handle.Position;
     subplot_right_edge = subplot_position(1)+subplot_position(3);
@@ -357,12 +351,7 @@ for n=1:subplot_number
     end    
     
     % add text to plots    
-    if any(strcmp('go', EMGdata.trials.Properties.VariableNames))
-        title_text = sprintf('Sweep #: %d %s %s', a, EMGdata.trials.FDI_or_ADM{a}, EMGdata.trials.go{a});
-    elseif any(strcmp('go_or_stop', EMGdata.trials.Properties.VariableNames))
-        title_text = sprintf('Sweep #: %d %s %s', a, EMGdata.trials.FDI_or_ADM{a}, EMGdata.trials.go_or_stop{a});
-    end
-    %title_text = sprintf('Sweep #: %d', a); %%%%MF
+    title_text = sprintf('Sweep #: %d', a);
     if n==1
         th = annotation('textbox', [(subplot_position(1)+subplot_position(3))/2 subplot_top+.02 .09 .02], 'String', title_text,'FontSize',18, 'FontName', 'Arial');
         th.LineStyle = 'none';
@@ -1140,12 +1129,12 @@ EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
 for n = 1:length(EMGdata.parameters.EMG_burst_channels)
     if EMGdata.trials.(['ch', num2str(EMGdata.parameters.EMG_burst_channels(n)),'_EMG_RT'])(a,1)
         EMGdata.trials.(['ch', num2str(EMGdata.parameters.EMG_burst_channels(n)),'_EMG_RT'])(a,1) = ...
-            EMGdata.trials.(['ch', num2str(EMGdata.parameters.EMG_burst_channels(n)),'_EMGburst_onset'])(a,1) - EMGdata.trials.go_stim_onset(a,1); %%%%MF
+            EMGdata.trials.(['ch', num2str(EMGdata.parameters.EMG_burst_channels(n)),'_EMGburst_onset'])(a,1) - EMGdata.trials.stim_onset(a,1);
     end
 end
 
 handles.EMGdata = EMGdata;
-plot_figure(EMGdata,handles,a);
+plot_figure(EMGdata,handles,a)
 guidata(hObject, handles);
 
 
@@ -1157,8 +1146,7 @@ function clear_diode_Callback(hObject, eventdata, handles)
 a=handles.a;
 EMGdata=handles.EMGdata;
 
-EMGdata.trials.go_stim_onset(a,1)=0; %%%%MF
-EMGdata.trials.stop_stim_onset(a,1)=0; %%%%MF
+EMGdata.trials.stim_onset(a,1)=0;
 EMGdata.trials.edited(a,1) = EMGdata.trials.edited(a,1)+1;
 
 handles.EMGdata = EMGdata;

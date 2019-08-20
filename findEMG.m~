@@ -127,10 +127,11 @@ if any(strcmp('go_or_stop', trials.Properties.VariableNames))
     trials.stop_stim_onset(:,1) = zeros;
 end
 
+
 if any(strcmp('photodiode', trials.Properties.VariableNames))
     trials = findDiode(trials,parameters);
-% else
-%     trials.stim_onset(:,1) = zeros;
+else
+    trials.stim_onset(:,1) = zeros;
 end
 %% Find TMS, MEP, and EMG events
 trials = findEvents(trials,parameters);
@@ -142,21 +143,12 @@ end
 %% Find Diode
 function trials=findDiode(trials,parameters)
 % detects large changes in photodiode signal
-for i=1:height(trials)
-    %% photodiode event
-    diff_diode = diff(trials.photodiode{i});
-    [max_diode_value,max_diode_index] = max(diff_diode);
-    if any(strcmp('go', trials.Properties.VariableNames))
-        trials.go_stim_onset(i,1) = max_diode_index/parameters.sampling_rate;
-    elseif any(strcmp('go_or_stop', trials.Properties.VariableNames))
-        trials.go_stim_onset(i,1) = max_diode_index/parameters.sampling_rate;
-        if strcmp(trials.go_or_stop(i,1),'stop')
-            [min_diode_value,min_diode_index] = min(diff_diode(max_diode_index:end));
-            trials.stop_stim_onset(i,1) = (max_diode_index+min_diode_index)/parameters.sampling_rate;
-        end
+    for i=1:height(trials)
+        %% photodiode event
+        diff_diode = diff(trials.photodiode{i});
+        [max_diode_value,max_diode_index] = max(diff_diode);
+        trials.stim_onset(i,1) = max_diode_index/parameters.sampling_rate; % location for GUI
     end
-    %trials.stim_onset(i,1) = max_diode_index/parameters.sampling_rate; % location for GUI
-end
 end
 
 %% Find TMS, MEP, CSP, and EMG
@@ -322,8 +314,8 @@ for i = 1:height(trials)
                     sum(abs(signal_burst(round(emg_burst_onset_time * parameters.sampling_rate):round(emg_burst_offset_time_from_start * parameters.sampling_rate))))/ ...
                     (round(emg_burst_offset_time_from_start * parameters.sampling_rate) - round(emg_burst_onset_time * parameters.sampling_rate)); % EMG burst area
                 
-                if trials.go_stim_onset(i,1)
-                    trials.(['ch', num2str(parameters.MEP_channels(chan)) '_EMG_RT'])(i,1) = trials.(['ch', num2str(parameters.MEP_channels(chan)) '_EMGburst_onset'])(i,1) - trials.go_stim_onset(i,1);
+                if trials.stim_onset(i,1)
+                    trials.(['ch', num2str(parameters.MEP_channels(chan)) '_EMG_RT'])(i,1) = trials.(['ch', num2str(parameters.MEP_channels(chan)) '_EMGburst_onset'])(i,1) - trials.stim_onset(i,1);
                 end
             end
         end
@@ -351,8 +343,8 @@ for i = 1:height(trials)
                     sum(abs(signal_burst(round(emg_burst_onset_time * parameters.sampling_rate):round(emg_burst_offset_time_from_start * parameters.sampling_rate))))/ ...
                     (round(emg_burst_offset_time_from_start * parameters.sampling_rate) - round(emg_burst_onset_time * parameters.sampling_rate)); % EMG burst area
                 
-                if trials.go_stim_onset(i,1)
-                    trials.(['ch', num2str(non_MEP_channels(chan)) '_EMG_RT'])(i,1) = trials.(['ch', num2str(non_MEP_channels(chan)) '_EMGburst_onset'])(i,1) - trials.go_stim_onset(i,1);
+                if trials.stim_onset(i,1)
+                    trials.(['ch', num2str(non_MEP_channels(chan)) '_EMG_RT'])(i,1) = trials.(['ch', num2str(non_MEP_channels(chan)) '_EMGburst_onset'])(i,1) - trials.stim_onset(i,1);
                 end
             end
         end
