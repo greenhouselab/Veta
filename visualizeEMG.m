@@ -287,14 +287,12 @@ for n=1:subplot_number
         set(gca,'children',flipud(get(gca,'children')))%plots patch behind trace
     end    
 
-    %add diode_adjust
-    if photodiode && n==subplot_number && EMGdata.trials.go_stim_onset(a,1)
-        line([EMGdata.trials.go_stim_onset(a,1) EMGdata.trials.go_stim_onset(a,1)], ylims(n, :) ,'Color',diode_color,'Marker','o') %%%%MF
-    end
-    
-     %diode line for stop stimulus onset %%%%MF
-    if photodiode && n==subplot_number && EMGdata.trials.stop_stim_onset(a,1)
-        line([EMGdata.trials.stop_stim_onset(a,1) EMGdata.trials.stop_stim_onset(a,1)], ylims(n, :) ,'Color',stop_diode_color,'Marker','o')
+    %add diode_adjust for go and stop stimulus 
+    if photodiode && n==subplot_number && any(strcmp('go', EMGdata.trials.Properties.VariableNames))
+       line([EMGdata.trials.go_stim_onset(a,1) EMGdata.trials.go_stim_onset(a,1)], ylims(n, :) ,'Color',diode_color,'Marker','o') %%%%MF
+    elseif photodiode && n==subplot_number && any(strcmp('go_or_stop', EMGdata.trials.Properties.VariableNames))
+       line([EMGdata.trials.go_stim_onset(a,1) EMGdata.trials.go_stim_onset(a,1)], ylims(n, :) ,'Color',diode_color,'Marker','o') %%%%MF
+       line([EMGdata.trials.stop_stim_onset(a,1) EMGdata.trials.stop_stim_onset(a,1)], ylims(n, :) ,'Color',stop_diode_color,'Marker','o')
     end
     
     % subplot position
@@ -358,7 +356,7 @@ for n=1:subplot_number
     
     % add text to plots    
     if any(strcmp('go', EMGdata.trials.Properties.VariableNames))
-        title_text = sprintf('Sweep #: %d %s %s', a, EMGdata.trials.FDI_or_ADM{a}, EMGdata.trials.go{a});
+        title_text = sprintf('Sweep #: %d %s', a, EMGdata.trials.FDI_or_ADM{a});
     elseif any(strcmp('go_or_stop', EMGdata.trials.Properties.VariableNames))
         title_text = sprintf('Sweep #: %d %s %s', a, EMGdata.trials.FDI_or_ADM{a}, EMGdata.trials.go_or_stop{a});
     end
