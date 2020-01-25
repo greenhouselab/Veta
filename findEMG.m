@@ -63,9 +63,9 @@ end
 parameters.sampling_rate = 5000; % samples per second (Hz)
 parameters.emg_burst_threshold = .3; % raw threshold in V to consider for EMG
 parameters.emg_onset_std_threshold = 2; % number of std to consider for EMG burst onsets/offsets
-parameters.tms_artefact_threshold = .04; % raw threshold magnitude in V to consider for TMS artefact
-parameters.MEP_window_post_artefact = .12; % time in s after TMS to measure MEP in seconds
-parameters.pre_TMS_reference_window = .1;  % time before TMS to serve as reference baseline for MEP onset
+parameters.tms_artefact_threshold = .0001; % raw threshold magnitude in V to consider for TMS artefact
+parameters.MEP_window_post_artefact = .1; % time in s after TMS to measure MEP in seconds
+parameters.pre_TMS_reference_window = .05;  % time before TMS to serve as reference baseline for MEP onset
 parameters.min_TMS_to_MEP_latency = .018; % number of secs after TMS to begin MEP onset detection
 parameters.MEP_onset_std_threshold = .5; % number of std to consider for MEP onsets
 parameters.RMS_preMEP_EMG_tolerance = .05; % root mean square EMG tolerance for including MEP
@@ -178,14 +178,14 @@ elseif parameters.EMG
 end
 
 %% sweep loop
-for i = 1:height(trials)
+for i = 1:height(trials)    
     %% find TMS artefact and MEP
     if parameters.MEP
         for chan = 1:length(parameters.MEP_channels)
             MEPchannel = trials.(['ch', num2str(parameters.MEP_channels(chan))]){i,1};
             if parameters.artchan_index
                 artchannel = trials.(['ch', num2str(parameters.artchan_index)]){i,1};
-                [artefact_value, TMS_artefact_sample_index] = max(abs(artchannel));
+                [artefact_value, TMS_artefact_sample_index] = max(artchannel); %max(abs(artchannel));
             else
                 TMS_artefact_sample_index = find(MEPchannel > parameters.tms_artefact_threshold,1);
                 artefact_value = abs(MEPchannel(TMS_artefact_sample_index));
@@ -216,6 +216,12 @@ for i = 1:height(trials)
                 %define MEP search range
                 lower_limit_MEP_window = TMS_artefact_sample_index + (parameters.min_TMS_to_MEP_latency * parameters.sampling_rate);
                 upper_limit_MEP_window = TMS_artefact_sample_index + (parameters.MEP_window_post_artefact * parameters.sampling_rate);
+                if lower_limit_MEP_window>length(MEPchannel)
+                    lower_limit_MEP_window = 1;
+                end
+                if upper_limit_MEP_window>length(MEPchannel)
+                    upper_limit_MEP_window = length(MEPchannel);
+                end
                 MEPsearchrange = abs(MEPchannel(lower_limit_MEP_window:upper_limit_MEP_window));
                 
                 % detect MEP onset and offset point;

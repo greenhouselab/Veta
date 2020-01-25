@@ -1,6 +1,6 @@
 function convert_Signal_to_Veta()
 
-% This function will convert .mat files created with the Delsys File Utility.
+% This function will convert .mat files.
 
 EMG_channels = input('Enter the numbers of channels containing EMG in this experiment (e.g. [2] or [1 3 5]: ');
 
